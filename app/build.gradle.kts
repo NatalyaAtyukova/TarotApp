@@ -37,6 +37,13 @@ android {
     buildFeatures {
         compose = true
     }
+    sourceSets {
+        getByName("main") {
+            java {
+                srcDirs("src/main/java", "src/main/java/com.example.taroapp/components")
+            }
+        }
+    }
 }
 
 dependencies {
