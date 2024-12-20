@@ -40,7 +40,9 @@ android {
     sourceSets {
         getByName("main") {
             java {
-                srcDirs("src/main/java", "src/main/java/com.example.taroapp/components")
+                srcDirs("src/main/java", "src/main/java/com.example.taroapp/components",
+                    "src/main/java/utils", "src/main/java/com.exapmle.tarotapp/utils"
+                )
             }
         }
     }
@@ -63,4 +65,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Новые зависимости
+    implementation("com.google.code.gson:gson:2.8.9") // Для работы с JSON
+    implementation("androidx.compose.foundation:foundation:1.4.0") // LazyColumn и другие layout-компоненты
+    implementation("androidx.compose.runtime:runtime:1.4.0") // Для @Composable функций
 }
