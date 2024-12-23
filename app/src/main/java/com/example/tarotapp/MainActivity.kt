@@ -26,6 +26,9 @@ class MainActivity : ComponentActivity() {
 fun TarotApp() {
     var screen by remember { mutableStateOf("single") }
 
+    // Статус подписки: заменить на реальную проверку (например, SharedPreferences)
+    var isSubscribed by remember { mutableStateOf(false) }
+
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -40,15 +43,25 @@ fun TarotApp() {
             ) {
                 Button(onClick = { screen = "single" }) { Text("Одна карта") }
                 Button(onClick = { screen = "three" }) { Text("Три карты") }
-                Button(onClick = { screen = "history" }) { Text("История") } // Новая кнопка
+                Button(onClick = { screen = "history" }) { Text("История") }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // Экран для управления подпиской
+            Button(
+                onClick = { isSubscribed = !isSubscribed },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(if (isSubscribed) "Отключить подписку" else "Активировать подписку")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             when (screen) {
-                "single" -> SingleCardScreen()
-                "three" -> MultiCardScreen(numCards = 3)
-                "history" -> HistoryScreen() // Переход на экран истории
+                "single" -> SingleCardScreen(isSubscribed = isSubscribed)
+                "three" -> MultiCardScreen(numCards = 3, isSubscribed = isSubscribed)
+                "history" -> HistoryScreen(isSubscribed = isSubscribed)
             }
         }
     }

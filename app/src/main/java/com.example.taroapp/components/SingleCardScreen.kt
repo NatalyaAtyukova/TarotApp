@@ -1,5 +1,6 @@
 package com.example.tarotapp.components
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -15,9 +16,10 @@ import com.example.tarotapp.components.loadImageFromAssets
 import kotlin.random.Random
 
 @Composable
-fun SingleCardScreen() {
+fun SingleCardScreen(isSubscribed: Boolean) {
     val context = LocalContext.current
     var selectedCard by remember { mutableStateOf<TarotCard?>(null) }
+    var remainingAttempts by remember { mutableStateOf(3) }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -37,19 +39,24 @@ fun SingleCardScreen() {
             }
             Text(selectedCard!!.name, fontSize = 20.sp, modifier = Modifier.padding(top = 8.dp))
             Text(selectedCard!!.description, fontSize = 16.sp, modifier = Modifier.padding(top = 4.dp))
-            Text(
-                text = selectedCard!!.situation,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(top = 4.dp)
-            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(onClick = {
-            selectedCard = tarotCards[Random.nextInt(tarotCards.size)]
+            if (isSubscribed || remainingAttempts > 0) {
+                selectedCard = tarotCards[Random.nextInt(tarotCards.size)]
+                if (!isSubscribed) remainingAttempts--
+            } else {
+                Toast.makeText(context, "Лимит гаданий на сегодня исчерпан!", Toast.LENGTH_SHORT).show()
+            }
         }) {
             Text("Вытянуть карту")
+        }
+
+        if (!isSubscribed) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("Осталось гаданий: $remainingAttempts", fontSize = 14.sp)
         }
     }
 }
