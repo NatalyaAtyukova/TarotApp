@@ -18,15 +18,31 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("/Volumes/KINGSTON/AndroidStudioProjects/TarotApp/keystore/tarotapp-release-key.jks") // Путь к вашему Keystore
+            storePassword = "s7(F4*Clj0" // Пароль для Keystore
+            keyAlias = "tarotapp_key_alias" // Alias ключа
+            keyPassword = "s7(F4*Clj0" // Пароль ключа
+        }
+    }
+
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug" // Добавляет суффикс к ID для debug-версии
+            versionNameSuffix = "-debug" // Добавляет суффикс версии для debug-версии
+        }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = false // Отключаем обфускацию
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release") // Привязываем конфигурацию подписи
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -49,7 +65,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
