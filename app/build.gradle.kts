@@ -82,7 +82,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Новые зависимости
-    implementation("com.google.code.gson:gson:2.8.9") // Для работы с JSON
+    implementation("com.google.code.gson:gson:2.10.1") // Для работы с JSON
     implementation("androidx.compose.foundation:foundation:1.4.0") // LazyColumn и другие layout-компоненты
-    implementation("androidx.compose.runtime:runtime:1.4.0") // Для @Composable функций
+    implementation("androidx.compose.runtime:runtime:1.7.6") // Для @Composable функций
+    implementation(platform("ru.rustore.sdk:bom:7.0.0"))
+    implementation("ru.rustore.sdk:billingclient")
 }
