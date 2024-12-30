@@ -10,10 +10,10 @@ android {
 
     defaultConfig {
         applicationId = "com.example.tarotapp"
-        minSdk = 31
+        minSdk = 29
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.0"
+        versionCode = 3
+        versionName = "1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -87,4 +87,5 @@ dependencies {
     implementation("androidx.compose.runtime:runtime:1.7.6") // Для @Composable функций
     implementation(platform("ru.rustore.sdk:bom:7.0.0"))
     implementation("ru.rustore.sdk:billingclient")
+    implementation("androidx.navigation:navigation-compose:2.6.0-alpha01")
 }
