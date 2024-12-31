@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
 @Composable
 fun SubscriptionScreen(
     hasBasicSubscription: Boolean,
@@ -27,11 +26,13 @@ fun SubscriptionScreen(
         // Базовая подписка
         Text(
             text = "Базовая подписка: ${
-                if (hasBasicSubscription || hasPremiumSubscription) {
-                    "Активна до ${
-                        basicSubscriptionEndDate ?: premiumSubscriptionEndDate ?: "неизвестно"
-                    }"
-                } else "Не активна"
+                if (hasPremiumSubscription) {
+                    "Не требуется (Премиум активен)"
+                } else if (hasBasicSubscription) {
+                    "Активна до ${basicSubscriptionEndDate ?: "неизвестно"}"
+                } else {
+                    "Не активна"
+                }
             }",
             fontSize = 16.sp,
             modifier = Modifier.padding(bottom = 8.dp)
@@ -39,7 +40,7 @@ fun SubscriptionScreen(
         Button(
             onClick = { onBasicSubscribe(!hasBasicSubscription) },
             modifier = Modifier.fillMaxWidth(),
-            enabled = !hasPremiumSubscription // Отключить кнопку, если премиум активен
+            enabled = !hasPremiumSubscription // Базовую подписку нельзя активировать с активной премиум подпиской
         ) {
             Text(if (hasBasicSubscription) "Отключить базовую подписку" else "Активировать базовую подписку")
         }
@@ -49,7 +50,11 @@ fun SubscriptionScreen(
         // Премиум подписка
         Text(
             text = "Премиум подписка: ${
-                if (hasPremiumSubscription) "Активна до $premiumSubscriptionEndDate" else "Не активна"
+                if (hasPremiumSubscription) {
+                    "Активна до ${premiumSubscriptionEndDate ?: "неизвестно"}"
+                } else {
+                    "Не активна"
+                }
             }",
             fontSize = 16.sp,
             modifier = Modifier.padding(bottom = 8.dp)
@@ -69,6 +74,36 @@ fun SubscriptionScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Перейти к экранам Таро")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Подсказка для пользователя
+        when {
+            hasPremiumSubscription -> {
+                Text(
+                    text = "Вы можете использовать премиум функции, включая доступ к базовым раскладам (5 и 10 карт).",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+            hasBasicSubscription -> {
+                Text(
+                    text = "Вы можете использовать базовые расклады (3 карты).",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+            else -> {
+                Text(
+                    text = "Для доступа к раскладам оформите подписку.",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
         }
     }
 }
