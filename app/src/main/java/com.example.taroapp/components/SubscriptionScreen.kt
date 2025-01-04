@@ -2,10 +2,11 @@ package com.example.tarotapp.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
 @Composable
 fun SubscriptionScreen(
     hasBasicSubscription: Boolean,
@@ -16,6 +17,9 @@ fun SubscriptionScreen(
     onPremiumSubscribe: (Boolean) -> Unit,
     onNavigateToTarotScreens: () -> Unit
 ) {
+    var isBasicLoading by remember { mutableStateOf(false) }
+    var isPremiumLoading by remember { mutableStateOf(false) }
+
     Column(modifier = Modifier.padding(16.dp)) {
         Text(
             text = "Управление подписками",
@@ -37,13 +41,17 @@ fun SubscriptionScreen(
             fontSize = 16.sp,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        Button(
-            onClick = { onBasicSubscribe(!hasBasicSubscription) },
+        LoadingButton(
+            isLoading = isBasicLoading,
+            text = if (hasBasicSubscription) "Отключить базовую подписку" else "Активировать базовую подписку",
+            onClick = {
+                isBasicLoading = true
+                onBasicSubscribe(!hasBasicSubscription)
+                isBasicLoading = false
+            },
             modifier = Modifier.fillMaxWidth(),
             enabled = !hasPremiumSubscription // Базовую подписку нельзя активировать с активной премиум подпиской
-        ) {
-            Text(if (hasBasicSubscription) "Отключить базовую подписку" else "Активировать базовую подписку")
-        }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -59,12 +67,16 @@ fun SubscriptionScreen(
             fontSize = 16.sp,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        Button(
-            onClick = { onPremiumSubscribe(!hasPremiumSubscription) },
+        LoadingButton(
+            isLoading = isPremiumLoading,
+            text = if (hasPremiumSubscription) "Отключить премиум подписку" else "Активировать премиум подписку",
+            onClick = {
+                isPremiumLoading = true
+                onPremiumSubscribe(!hasPremiumSubscription)
+                isPremiumLoading = false
+            },
             modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(if (hasPremiumSubscription) "Отключить премиум подписку" else "Активировать премиум подписку")
-        }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -104,6 +116,30 @@ fun SubscriptionScreen(
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun LoadingButton(
+    isLoading: Boolean,
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled && !isLoading // Кнопка отключена, если идет загрузка
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(16.dp)
+            )
+        } else {
+            Text(text)
         }
     }
 }
