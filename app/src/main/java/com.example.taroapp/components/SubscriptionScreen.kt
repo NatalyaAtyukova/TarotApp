@@ -9,15 +9,15 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun SubscriptionScreen(
-    hasBasicSubscription: Boolean,
+    hasThreeCardSubscription: Boolean,
     hasPremiumSubscription: Boolean,
-    basicSubscriptionEndDate: String?, // Дата окончания базовой подписки
-    premiumSubscriptionEndDate: String?, // Дата окончания премиум подписки
-    onBasicSubscribe: (Boolean) -> Unit,
+    threeCardSubscriptionEndDate: String?,
+    premiumSubscriptionEndDate: String?,
+    onThreeCardSubscribe: (Boolean) -> Unit,
     onPremiumSubscribe: (Boolean) -> Unit,
     onNavigateToTarotScreens: () -> Unit
 ) {
-    var isBasicLoading by remember { mutableStateOf(false) }
+    var isThreeCardLoading by remember { mutableStateOf(false) }
     var isPremiumLoading by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -27,13 +27,11 @@ fun SubscriptionScreen(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Базовая подписка
+        // Подписка на 3 карты
         Text(
-            text = "Базовая подписка: ${
-                if (hasPremiumSubscription) {
-                    "Не требуется (Премиум активен)"
-                } else if (hasBasicSubscription) {
-                    "Активна до ${basicSubscriptionEndDate ?: "неизвестно"}"
+            text = "Подписка на 3 карты: ${
+                if (hasThreeCardSubscription) {
+                    "Активна до ${threeCardSubscriptionEndDate ?: "неизвестно"}"
                 } else {
                     "Не активна"
                 }
@@ -42,15 +40,15 @@ fun SubscriptionScreen(
             modifier = Modifier.padding(bottom = 8.dp)
         )
         LoadingButton(
-            isLoading = isBasicLoading,
-            text = if (hasBasicSubscription) "Отключить базовую подписку" else "Активировать базовую подписку",
+            isLoading = isThreeCardLoading,
+            text = if (hasThreeCardSubscription) "Отключить подписку на 3 карты" else "Активировать подписку на 3 карты",
             onClick = {
-                isBasicLoading = true
-                onBasicSubscribe(!hasBasicSubscription)
-                isBasicLoading = false
+                isThreeCardLoading = true
+                onThreeCardSubscribe(!hasThreeCardSubscription)
+                isThreeCardLoading = false
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = !hasPremiumSubscription // Базовую подписку нельзя активировать с активной премиум подпиской
+            enabled = !hasPremiumSubscription // Подписка на 3 карты недоступна с премиум подпиской
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -100,9 +98,9 @@ fun SubscriptionScreen(
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
-            hasBasicSubscription -> {
+            hasThreeCardSubscription -> {
                 Text(
-                    text = "Вы можете использовать базовые расклады (3 карты).",
+                    text = "Вы можете использовать расклады на 3 карты.",
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(top = 8.dp)

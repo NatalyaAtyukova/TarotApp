@@ -17,10 +17,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.rustore.sdk.billingclient.RuStoreBillingClient
 import ru.rustore.sdk.billingclient.RuStoreBillingClientFactory
-import ru.rustore.sdk.billingclient.model.purchase.PurchaseState
+import ru.rustore.sdk.billingclient.model.purchase.PaymentResult
 import com.example.tarotapp.components.SubscriptionScreen
 import com.example.tarotapp.components.TarotScreens
-import org.json.JSONObject
+import com.example.tarotapp.components.HistoryScreen
+
 import java.util.*
 
 class MainActivity : ComponentActivity() {
@@ -31,8 +32,8 @@ class MainActivity : ComponentActivity() {
 
         billingClient = RuStoreBillingClientFactory.create(
             context = applicationContext,
-            consoleApplicationId = "YOUR_CONSOLE_APP_ID",
-            deeplinkScheme = "yourappscheme"
+            consoleApplicationId = "2063587401",
+            deeplinkScheme = "com.example.tarotapp"
         )
 
         if (savedInstanceState == null) {
@@ -58,14 +59,14 @@ fun MainApp(billingClient: RuStoreBillingClient) {
 
     val navController = rememberNavController()
 
-    var hasBasicSubscription by remember {
-        mutableStateOf(sharedPreferences.getBoolean("hasBasicSubscription", false))
+    var hasThreeCardSubscription by remember {
+        mutableStateOf(sharedPreferences.getBoolean("hasThreeCardSubscription", false))
     }
     var hasPremiumSubscription by remember {
         mutableStateOf(sharedPreferences.getBoolean("hasPremiumSubscription", false))
     }
-    var basicSubscriptionEndDate by remember {
-        mutableStateOf(sharedPreferences.getString("basicSubscriptionEndDate", null))
+    var threeCardSubscriptionEndDate by remember {
+        mutableStateOf(sharedPreferences.getString("threeCardSubscriptionEndDate", null))
     }
     var premiumSubscriptionEndDate by remember {
         mutableStateOf(sharedPreferences.getString("premiumSubscriptionEndDate", null))
@@ -73,99 +74,55 @@ fun MainApp(billingClient: RuStoreBillingClient) {
 
     fun saveSubscriptions() {
         sharedPreferences.edit().apply {
-            putBoolean("hasBasicSubscription", hasBasicSubscription)
+            putBoolean("hasThreeCardSubscription", hasThreeCardSubscription)
             putBoolean("hasPremiumSubscription", hasPremiumSubscription)
+            putString("threeCardSubscriptionEndDate", threeCardSubscriptionEndDate)
+            putString("premiumSubscriptionEndDate", premiumSubscriptionEndDate)
             apply()
         }
-    }
-
-    fun saveSubscriptionDates(basicDate: String?, premiumDate: String?) {
-        sharedPreferences.edit().apply {
-            putString("basicSubscriptionEndDate", basicDate)
-            putString("premiumSubscriptionEndDate", premiumDate)
-            apply()
-        }
-    }
-
-    fun extractEndDateFromSubscriptionToken(subscriptionToken: String): String? {
-        return try {
-            val jsonObject = JSONObject(subscriptionToken)
-            jsonObject.getString("endDate") // Предполагается, что токен содержит дату окончания
-        } catch (e: Exception) {
-            Log.e("SubscriptionToken", "Ошибка обработки токена: ${e.message}")
-            null
-        }
-    }
-
-    fun fetchSubscriptionInfo(purchaseId: String, productId: String) {
-        billingClient.purchases.getPurchaseInfo(purchaseId)
-            .addOnSuccessListener { purchase ->
-                val endDate = purchase.subscriptionToken?.let {
-                    extractEndDateFromSubscriptionToken(it)
-                }
-                when (productId) {
-                    "basic_subscription_id" -> {
-                        hasBasicSubscription = true
-                        basicSubscriptionEndDate = endDate
-                        hasPremiumSubscription = false
-                        premiumSubscriptionEndDate = null
-                    }
-                    "premium_subscription_id" -> {
-                        hasPremiumSubscription = true
-                        premiumSubscriptionEndDate = endDate
-                        hasBasicSubscription = false
-                        basicSubscriptionEndDate = null
-                    }
-                }
-                saveSubscriptions()
-                saveSubscriptionDates(basicSubscriptionEndDate, premiumSubscriptionEndDate)
-            }
-            .addOnFailureListener { throwable ->
-                Log.e("BillingClient", "Ошибка получения информации о подписке", throwable)
-            }
     }
 
     fun purchaseSubscription(productId: String) {
         billingClient.products.getProducts(listOf(productId))
             .addOnSuccessListener { products ->
                 val product = products.firstOrNull()
-                if (product == null) {
-                    Log.e("BillingClient", "Продукт с ID $productId не найден")
-                    return@addOnSuccessListener
-                }
-
-                billingClient.purchases.purchaseProduct(
-                    productId = product.productId,
-                    orderId = UUID.randomUUID().toString(),
-                    quantity = 1,
-                    developerPayload = null
-                ).addOnSuccessListener { paymentResult ->
-                    when (paymentResult) {
-                        is ru.rustore.sdk.billingclient.model.purchase.PaymentResult.Success -> {
-                            fetchSubscriptionInfo(
-                                purchaseId = paymentResult.purchaseId,
-                                productId = productId
-                            )
+                if (product != null) {
+                    billingClient.purchases.purchaseProduct(
+                        productId = product.productId,
+                        orderId = UUID.randomUUID().toString(),
+                        quantity = 1,
+                        developerPayload = null
+                    ).addOnSuccessListener { paymentResult ->
+                        when (paymentResult) {
+                            is PaymentResult.Success -> {
+                                Log.d("BillingClient", "Покупка завершена: ${paymentResult.purchaseId}")
+                                if (productId == "three_card_subscription") {
+                                    hasThreeCardSubscription = true
+                                    threeCardSubscriptionEndDate = "2025-01-01" // Тестовая дата
+                                } else if (productId == "premium_monthly_subscription") {
+                                    hasPremiumSubscription = true
+                                    premiumSubscriptionEndDate = "2025-01-01" // Тестовая дата
+                                }
+                                saveSubscriptions()
+                            }
+                            is PaymentResult.Cancelled -> {
+                                Log.e("BillingClient", "Покупка отменена пользователем")
+                            }
+                            is PaymentResult.Failure -> {
+                                Log.e("BillingClient", "Ошибка покупки: ${paymentResult.errorCode}")
+                            }
+                            else -> {
+                                Log.e("BillingClient", "Неизвестный результат покупки")
+                            }
                         }
-                        is ru.rustore.sdk.billingclient.model.purchase.PaymentResult.Cancelled -> {
-                            Log.e("BillingClient", "Покупка отменена пользователем")
-                        }
-                        is ru.rustore.sdk.billingclient.model.purchase.PaymentResult.Failure -> {
-                            Log.e("BillingClient", "Ошибка покупки: ${paymentResult.errorCode}")
-                        }
-                        is ru.rustore.sdk.billingclient.model.purchase.PaymentResult.InvalidPaymentState -> {
-                            Log.e("BillingClient", "Некорректное состояние оплаты")
-                        }
-                        else -> {
-                            Log.e("BillingClient", "Неизвестный результат покупки")
-                        }
+                    }.addOnFailureListener { throwable ->
+                        Log.e("BillingClient", "Ошибка оформления подписки: ${throwable.message}")
                     }
-                }.addOnFailureListener { throwable ->
-                    Log.e("BillingClient", "Ошибка оформления подписки", throwable)
+                } else {
+                    Log.e("BillingClient", "Продукт не найден")
                 }
-            }
-            .addOnFailureListener { throwable ->
-                Log.e("BillingClient", "Ошибка получения продукта", throwable)
+            }.addOnFailureListener { throwable ->
+                Log.e("BillingClient", "Ошибка получения продукта: ${throwable.message}")
             }
     }
 
@@ -178,6 +135,9 @@ fun MainApp(billingClient: RuStoreBillingClient) {
                 Tab(selected = false, onClick = { navController.navigate("tarot") }) {
                     Text("Таро")
                 }
+                Tab(selected = false, onClick = { navController.navigate("history") }) {
+                    Text("История")
+                }
             }
         },
         content = { paddingValues ->
@@ -188,30 +148,12 @@ fun MainApp(billingClient: RuStoreBillingClient) {
             ) {
                 composable("subscription") {
                     SubscriptionScreen(
-                        hasBasicSubscription = hasBasicSubscription,
+                        hasThreeCardSubscription = hasThreeCardSubscription,
                         hasPremiumSubscription = hasPremiumSubscription,
-                        basicSubscriptionEndDate = basicSubscriptionEndDate,
+                        threeCardSubscriptionEndDate = threeCardSubscriptionEndDate,
                         premiumSubscriptionEndDate = premiumSubscriptionEndDate,
-                        onBasicSubscribe = { isActive ->
-                            if (isActive) {
-                                purchaseSubscription("basic_subscription_id")
-                            } else {
-                                hasBasicSubscription = false
-                                basicSubscriptionEndDate = null
-                                saveSubscriptions()
-                                saveSubscriptionDates(basicSubscriptionEndDate, premiumSubscriptionEndDate)
-                            }
-                        },
-                        onPremiumSubscribe = { isActive ->
-                            if (isActive) {
-                                purchaseSubscription("premium_subscription_id")
-                            } else {
-                                hasPremiumSubscription = false
-                                premiumSubscriptionEndDate = null
-                                saveSubscriptions()
-                                saveSubscriptionDates(basicSubscriptionEndDate, premiumSubscriptionEndDate)
-                            }
-                        },
+                        onThreeCardSubscribe = { purchaseSubscription("three_card_subscription") },
+                        onPremiumSubscribe = { purchaseSubscription("premium_monthly_subscription") },
                         onNavigateToTarotScreens = { navController.navigate("tarot") }
                     )
                 }
@@ -219,7 +161,7 @@ fun MainApp(billingClient: RuStoreBillingClient) {
                     TarotScreens(
                         navigateToSingleCard = { navController.navigate("single") },
                         navigateToThreeCards = {
-                            if (hasBasicSubscription || hasPremiumSubscription) {
+                            if (hasThreeCardSubscription || hasPremiumSubscription) {
                                 navController.navigate("three")
                             }
                         },
@@ -234,8 +176,13 @@ fun MainApp(billingClient: RuStoreBillingClient) {
                             }
                         },
                         navigateToHistory = { navController.navigate("history") },
-                        hasBasicSubscription = hasBasicSubscription,
+                        hasThreeCardSubscription = hasThreeCardSubscription,
                         hasPremiumSubscription = hasPremiumSubscription
+                    )
+                }
+                composable("history") {
+                    HistoryScreen(
+                        isSubscribed = hasThreeCardSubscription || hasPremiumSubscription
                     )
                 }
             }

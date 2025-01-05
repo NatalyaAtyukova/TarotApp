@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+
 @Composable
 fun TarotScreens(
     navigateToSingleCard: () -> Unit,
@@ -27,7 +28,7 @@ fun TarotScreens(
     navigateToFiveCards: () -> Unit,
     navigateToTenCards: () -> Unit,
     navigateToHistory: () -> Unit,
-    hasBasicSubscription: Boolean,
+    hasThreeCardSubscription: Boolean,
     hasPremiumSubscription: Boolean
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -59,13 +60,13 @@ fun TarotScreens(
             text = "Три карты",
             icon = Icons.Default.GroupWork,
             color = MaterialTheme.colorScheme.primary,
-            isEnabled = hasBasicSubscription || hasPremiumSubscription,
+            isEnabled = hasThreeCardSubscription || hasPremiumSubscription,
             onClick = {
-                if (hasBasicSubscription || hasPremiumSubscription) {
+                if (hasThreeCardSubscription || hasPremiumSubscription) {
                     navigateToThreeCards()
                 } else {
                     coroutineScope.launch {
-                        showSubscriptionWarning(snackbarHostState, "Базовая подписка")
+                        showSubscriptionWarning(snackbarHostState, "подписка на 3 карты")
                     }
                 }
             }
@@ -141,7 +142,7 @@ fun TarotCardOption(
         onClick = {
             if (isEnabled) onClick()
         },
-        enabled = isEnabled // Отключаем клик, если функция недоступна
+        enabled = isEnabled
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
