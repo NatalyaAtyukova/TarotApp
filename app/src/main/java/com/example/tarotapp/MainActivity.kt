@@ -29,8 +29,8 @@ class MainActivity : ComponentActivity() {
         // Инициализация RuStoreBillingClient
         billingClient = RuStoreBillingClientFactory.create(
             context = this,
-            consoleApplicationId = "ВАШ_CONSOLE_APPLICATION_ID", // Укажите свой ID из RuStore Консоли
-            deeplinkScheme = "yourappscheme" // Укажите схему deeplink
+            consoleApplicationId = "2063587401", // Укажите свой ID из RuStore Консоли
+            deeplinkScheme = "com.example.tarotapp" // Укажите схему deeplink
         )
 
         setContent {
