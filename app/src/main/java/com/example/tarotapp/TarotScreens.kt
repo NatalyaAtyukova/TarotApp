@@ -27,7 +27,7 @@ fun TarotScreens(
     navigateToFiveCards: () -> Unit,
     navigateToTenCards: () -> Unit,
     navigateToHistory: () -> Unit,
-    hasBasicSubscription: Boolean,
+    hasThreeCardSubscription: Boolean,
     hasPremiumSubscription: Boolean
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -51,27 +51,22 @@ fun TarotScreens(
             text = "Одна карта",
             icon = Icons.Default.Star,
             color = MaterialTheme.colorScheme.primary,
-            onClick = {
-                println("Navigating to SingleCardScreen")
-                navigateToSingleCard()
-            }
+            onClick = navigateToSingleCard
         )
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-        // Три карты: доступно для базовой или премиум подписки
+        // Три карты: доступно для подписки на 3 карты или премиум подписки
         TarotCardOption(
             text = "Три карты",
             icon = Icons.Default.GroupWork,
-            color = if (hasBasicSubscription || hasPremiumSubscription) MaterialTheme.colorScheme.primary else Color.Gray,
+            color = if (hasThreeCardSubscription || hasPremiumSubscription) MaterialTheme.colorScheme.primary else Color.Gray,
             onClick = {
-                if (hasBasicSubscription || hasPremiumSubscription) {
-                    println("Navigating to MultiCardScreen (3 cards)")
+                if (hasThreeCardSubscription || hasPremiumSubscription) {
                     navigateToThreeCards()
                 } else {
                     coroutineScope.launch {
-                        println("Snackbar: Basic subscription required")
-                        showSubscriptionWarning(snackbarHostState, "Базовая подписка")
+                        showSubscriptionWarning(snackbarHostState, "Подписка на 3 карты")
                     }
                 }
             }
@@ -86,11 +81,9 @@ fun TarotScreens(
             color = if (hasPremiumSubscription) MaterialTheme.colorScheme.primary else Color.Gray,
             onClick = {
                 if (hasPremiumSubscription) {
-                    println("Navigating to PremiumTarotScreen (5 cards)")
                     navigateToFiveCards()
                 } else {
                     coroutineScope.launch {
-                        println("Snackbar: Premium subscription required")
                         showSubscriptionWarning(snackbarHostState, "Премиум подписка")
                     }
                 }
@@ -106,11 +99,9 @@ fun TarotScreens(
             color = if (hasPremiumSubscription) MaterialTheme.colorScheme.primary else Color.Gray,
             onClick = {
                 if (hasPremiumSubscription) {
-                    println("Navigating to PremiumTarotScreen (10 cards)")
                     navigateToTenCards()
                 } else {
                     coroutineScope.launch {
-                        println("Snackbar: Premium subscription required")
                         showSubscriptionWarning(snackbarHostState, "Премиум подписка")
                     }
                 }
@@ -124,16 +115,16 @@ fun TarotScreens(
             text = "История",
             icon = Icons.Default.History,
             color = MaterialTheme.colorScheme.primary,
-            onClick = {
-                println("Navigating to HistoryScreen")
-                navigateToHistory()
-            }
+            onClick = navigateToHistory
         )
 
         Spacer(modifier = Modifier.weight(1f))
 
         // Snackbar для отображения предупреждений
-        SnackbarHost(hostState = snackbarHostState, modifier = Modifier.align(Alignment.CenterHorizontally))
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
     }
 }
 
@@ -150,10 +141,7 @@ fun TarotCardOption(
             .fillMaxWidth()
             .padding(vertical = 4.dp),
         colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.1f)),
-        onClick = {
-            println("Card clicked: $text")
-            onClick()
-        }
+        onClick = onClick
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -181,6 +169,5 @@ suspend fun showSubscriptionWarning(
     snackbarHostState: SnackbarHostState,
     subscriptionType: String
 ) {
-    println("Showing subscription warning: $subscriptionType")
     snackbarHostState.showSnackbar("Для этого действия требуется $subscriptionType.")
 }

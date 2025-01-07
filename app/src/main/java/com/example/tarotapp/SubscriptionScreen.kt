@@ -6,13 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
 @Composable
 fun SubscriptionScreen(
-    hasBasicSubscription: Boolean,
+    hasThreeCardSubscription: Boolean,
     hasPremiumSubscription: Boolean,
-    basicSubscriptionEndDate: String?, // Дата окончания базовой подписки
-    premiumSubscriptionEndDate: String?, // Дата окончания премиум подписки
-    onBasicSubscribe: (Boolean) -> Unit,
+    onThreeCardSubscribe: (Boolean) -> Unit,
     onPremiumSubscribe: (Boolean) -> Unit,
     onNavigateToTarotScreens: () -> Unit
 ) {
@@ -23,13 +22,13 @@ fun SubscriptionScreen(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Базовая подписка
+        // Подписка на 3 карты
         Text(
-            text = "Базовая подписка: ${
+            text = "Подписка на 3 карты: ${
                 if (hasPremiumSubscription) {
                     "Не требуется (Премиум активен)"
-                } else if (hasBasicSubscription) {
-                    "Активна до ${basicSubscriptionEndDate ?: "неизвестно"}"
+                } else if (hasThreeCardSubscription) {
+                    "Активна"
                 } else {
                     "Не активна"
                 }
@@ -38,11 +37,11 @@ fun SubscriptionScreen(
             modifier = Modifier.padding(bottom = 8.dp)
         )
         Button(
-            onClick = { onBasicSubscribe(!hasBasicSubscription) },
+            onClick = { onThreeCardSubscribe(!hasThreeCardSubscription) },
             modifier = Modifier.fillMaxWidth(),
-            enabled = !hasPremiumSubscription // Базовую подписку нельзя активировать с активной премиум подпиской
+            enabled = !hasPremiumSubscription // Нельзя активировать базовую подписку, если активна премиум подписка
         ) {
-            Text(if (hasBasicSubscription) "Отключить базовую подписку" else "Активировать базовую подписку")
+            Text(if (hasThreeCardSubscription) "Отключить подписку на 3 карты" else "Активировать подписку на 3 карты")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -51,7 +50,7 @@ fun SubscriptionScreen(
         Text(
             text = "Премиум подписка: ${
                 if (hasPremiumSubscription) {
-                    "Активна до ${premiumSubscriptionEndDate ?: "неизвестно"}"
+                    "Активна"
                 } else {
                     "Не активна"
                 }
@@ -82,13 +81,13 @@ fun SubscriptionScreen(
         when {
             hasPremiumSubscription -> {
                 Text(
-                    text = "Вы можете использовать премиум функции, включая доступ к базовым раскладам (5 и 10 карт).",
+                    text = "Вы можете использовать премиум функции, включая доступ к раскладам (3, 5 и 10 карт).",
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
-            hasBasicSubscription -> {
+            hasThreeCardSubscription -> {
                 Text(
                     text = "Вы можете использовать базовые расклады (3 карты).",
                     fontSize = 14.sp,
