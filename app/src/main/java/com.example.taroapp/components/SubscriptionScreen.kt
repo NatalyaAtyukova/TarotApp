@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 
 @Composable
 fun SubscriptionScreen(
@@ -13,8 +15,12 @@ fun SubscriptionScreen(
     hasPremiumSubscription: Boolean,
     onThreeCardSubscribe: (Boolean) -> Unit,
     onPremiumSubscribe: (Boolean) -> Unit,
-    onNavigateToTarotScreens: () -> Unit
+    onNavigateToTarotScreens: () -> Unit,
+    isLoading: Boolean = false,
+    errorMessage: String? = null
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+
     Column(modifier = Modifier.padding(16.dp)) {
         Text(
             text = "Управление подписками",
@@ -39,9 +45,17 @@ fun SubscriptionScreen(
         Button(
             onClick = { onThreeCardSubscribe(!hasThreeCardSubscription) },
             modifier = Modifier.fillMaxWidth(),
-            enabled = !hasPremiumSubscription // Нельзя активировать базовую подписку, если активна премиум подписка
+            enabled = !isLoading && !hasPremiumSubscription
         ) {
-            Text(if (hasThreeCardSubscription) "Отключить подписку на 3 карты" else "Активировать подписку на 3 карты")
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            } else {
+                Text(if (hasThreeCardSubscription) "Отключить подписку на 3 карты" else "Активировать подписку на 3 карты")
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -60,9 +74,18 @@ fun SubscriptionScreen(
         )
         Button(
             onClick = { onPremiumSubscribe(!hasPremiumSubscription) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isLoading
         ) {
-            Text(if (hasPremiumSubscription) "Отключить премиум подписку" else "Активировать премиум подписку")
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            } else {
+                Text(if (hasPremiumSubscription) "Отключить премиум подписку" else "Активировать премиум подписку")
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -70,7 +93,8 @@ fun SubscriptionScreen(
         // Кнопка перехода к экранам Таро
         Button(
             onClick = onNavigateToTarotScreens,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isLoading
         ) {
             Text("Перейти к экранам Таро")
         }
@@ -102,6 +126,13 @@ fun SubscriptionScreen(
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(top = 8.dp)
                 )
+            }
+        }
+
+        // Отображение ошибок
+        errorMessage?.let {
+            LaunchedEffect(snackbarHostState) {
+                snackbarHostState.showSnackbar(it)
             }
         }
     }

@@ -13,16 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ru.rustore.sdk.billingclient.RuStoreBillingClient
 import ru.rustore.sdk.billingclient.RuStoreBillingClientFactory
 import ru.rustore.sdk.billingclient.model.purchase.PaymentResult
-import com.example.tarotapp.components.TarotScreens
-import com.example.tarotapp.components.SubscriptionScreen
-import com.example.tarotapp.components.SingleCardScreen
-import com.example.tarotapp.components.MultiCardScreen
-import com.example.tarotapp.components.PremiumTarotScreen
-import com.example.tarotapp.components.HistoryScreen
+import com.example.tarotapp.components.*
 
 class MainActivity : ComponentActivity() {
     private lateinit var billingClient: RuStoreBillingClient
@@ -58,40 +54,41 @@ fun MainApp(billingClient: RuStoreBillingClient) {
 
     var hasThreeCardSubscription by remember { mutableStateOf(false) }
     var hasPremiumSubscription by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
 
-    // Функция сохранения подписок
-    fun saveSubscriptions() {
-        sharedPreferences.edit().apply {
-            putBoolean("hasThreeCardSubscription", hasThreeCardSubscription)
-            putBoolean("hasPremiumSubscription", hasPremiumSubscription)
-            apply()
-        }
-    }
-
-    // Получение подписок
-    LaunchedEffect(Unit) {
-        billingClient.purchases.getPurchases()
-            .addOnSuccessListener { purchases ->
-                hasThreeCardSubscription = purchases.any { it.productId == "three_card_subscription" }
-                hasPremiumSubscription = purchases.any { it.productId == "premium_monthly_subscription" }
-                saveSubscriptions()
-            }
-            .addOnFailureListener {
-                println("Ошибка получения подписок: ${it.message}")
-            }
-    }
+    // Отслеживаем текущий маршрут
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     Scaffold(
         topBar = {
-            TabRow(selectedTabIndex = 0) {
+            // TabRow обновляется в зависимости от текущего маршрута
+            TabRow(
+                selectedTabIndex = when (currentRoute) {
+                    "subscription" -> 0
+                    "tarot", "single", "three", "five", "ten", "history" -> 1
+                    else -> 0
+                }
+            ) {
                 Tab(
-                    selected = true,
-                    onClick = { navController.navigate("subscription") },
+                    selected = currentRoute == "subscription",
+                    onClick = {
+                        if (currentRoute != "subscription") {
+                            navController.navigate("subscription") {
+                                popUpTo("subscription") { inclusive = false }
+                            }
+                        }
+                    },
                     text = { Text("Подписки") }
                 )
                 Tab(
-                    selected = false,
-                    onClick = { navController.navigate("tarot") },
+                    selected = currentRoute in listOf("tarot", "single", "three", "five", "ten", "history"),
+                    onClick = {
+                        if (currentRoute !in listOf("tarot", "single", "three", "five", "ten", "history")) {
+                            navController.navigate("tarot") {
+                                popUpTo("tarot") { inclusive = false }
+                            }
+                        }
+                    },
                     text = { Text("Экраны Таро") }
                 )
             }
@@ -106,9 +103,64 @@ fun MainApp(billingClient: RuStoreBillingClient) {
                     SubscriptionScreen(
                         hasThreeCardSubscription = hasThreeCardSubscription,
                         hasPremiumSubscription = hasPremiumSubscription,
-                        onThreeCardSubscribe = { /* Ваш код */ },
-                        onPremiumSubscribe = { /* Ваш код */ },
-                        onNavigateToTarotScreens = { navController.navigate("tarot") }
+                        onThreeCardSubscribe = { isActivating ->
+                            isLoading = true
+                            billingClient.purchases.purchaseProduct(
+                                productId = "three_card_subscription",
+                                orderId = "three_card_order_${System.currentTimeMillis()}",
+                                quantity = 1,
+                                developerPayload = null
+                            ).addOnSuccessListener { result ->
+                                if (result is PaymentResult.Success) {
+                                    billingClient.purchases.confirmPurchase(result.purchaseId)
+                                        .addOnSuccessListener {
+                                            hasThreeCardSubscription = isActivating
+                                            saveSubscriptions(sharedPreferences)
+                                            isLoading = false
+                                        }
+                                        .addOnFailureListener {
+                                            println("Ошибка подтверждения подписки: ${it.message}")
+                                            isLoading = false
+                                        }
+                                } else {
+                                    println("Ошибка покупки: ${result}")
+                                    isLoading = false
+                                }
+                            }.addOnFailureListener {
+                                println("Ошибка вызова RuStore: ${it.message}")
+                                isLoading = false
+                            }
+                        },
+                        onPremiumSubscribe = { isActivating ->
+                            isLoading = true
+                            billingClient.purchases.purchaseProduct(
+                                productId = "premium_monthly_subscription",
+                                orderId = "premium_order_${System.currentTimeMillis()}",
+                                quantity = 1,
+                                developerPayload = null
+                            ).addOnSuccessListener { result ->
+                                if (result is PaymentResult.Success) {
+                                    billingClient.purchases.confirmPurchase(result.purchaseId)
+                                        .addOnSuccessListener {
+                                            hasPremiumSubscription = isActivating
+                                            saveSubscriptions(sharedPreferences)
+                                            isLoading = false
+                                        }
+                                        .addOnFailureListener {
+                                            println("Ошибка подтверждения подписки: ${it.message}")
+                                            isLoading = false
+                                        }
+                                } else {
+                                    println("Ошибка покупки: ${result}")
+                                    isLoading = false
+                                }
+                            }.addOnFailureListener {
+                                println("Ошибка вызова RuStore: ${it.message}")
+                                isLoading = false
+                            }
+                        },
+                        onNavigateToTarotScreens = { navController.navigate("tarot") },
+                        isLoading = isLoading
                     )
                 }
                 composable("tarot") {
@@ -152,4 +204,12 @@ fun MainApp(billingClient: RuStoreBillingClient) {
             }
         }
     )
+}
+
+fun saveSubscriptions(sharedPreferences: SharedPreferences) {
+    sharedPreferences.edit().apply {
+        putBoolean("hasThreeCardSubscription", true)
+        putBoolean("hasPremiumSubscription", true)
+        apply()
+    }
 }
