@@ -19,6 +19,10 @@ import ru.rustore.sdk.billingclient.RuStoreBillingClientFactory
 import ru.rustore.sdk.billingclient.model.purchase.PaymentResult
 import com.example.tarotapp.components.TarotScreens
 import com.example.tarotapp.components.SubscriptionScreen
+import com.example.tarotapp.components.SingleCardScreen
+import com.example.tarotapp.components.MultiCardScreen
+import com.example.tarotapp.components.PremiumTarotScreen
+import com.example.tarotapp.components.HistoryScreen
 
 class MainActivity : ComponentActivity() {
     private lateinit var billingClient: RuStoreBillingClient
@@ -102,84 +106,11 @@ fun MainApp(billingClient: RuStoreBillingClient) {
                     SubscriptionScreen(
                         hasThreeCardSubscription = hasThreeCardSubscription,
                         hasPremiumSubscription = hasPremiumSubscription,
-                        onThreeCardSubscribe = {
-                            billingClient.purchases.purchaseProduct(
-                                productId = "three_card_subscription",
-                                orderId = "three_card_order_${System.currentTimeMillis()}",
-                                quantity = 1,
-                                developerPayload = null
-                            ).addOnSuccessListener { paymentResult ->
-                                when (paymentResult) {
-                                    is PaymentResult.Success -> {
-                                        billingClient.purchases.confirmPurchase(paymentResult.purchaseId)
-                                            .addOnSuccessListener {
-                                                hasThreeCardSubscription = true
-                                                hasPremiumSubscription = false
-                                                saveSubscriptions()
-                                            }
-                                            .addOnFailureListener {
-                                                println("Ошибка подтверждения покупки: ${it.message}")
-                                            }
-                                    }
-                                    is PaymentResult.Cancelled -> {
-                                        println("Покупка отменена пользователем")
-                                    }
-                                    is PaymentResult.Failure -> {
-                                        println("Ошибка покупки: ${paymentResult.errorCode}")
-                                    }
-                                    PaymentResult.InvalidPaymentState -> {
-                                        println("Некорректное состояние оплаты")
-                                    }
-                                    else -> {
-                                        println("Неизвестный результат оплаты")
-                                    }
-                                }
-                            }.addOnFailureListener {
-                                println("Ошибка вызова покупки: ${it.message}")
-                            }
-                        },
-                        onPremiumSubscribe = {
-                            billingClient.purchases.purchaseProduct(
-                                productId = "premium_monthly_subscription",
-                                orderId = "premium_order_${System.currentTimeMillis()}",
-                                quantity = 1,
-                                developerPayload = null
-                            ).addOnSuccessListener { paymentResult ->
-                                when (paymentResult) {
-                                    is PaymentResult.Success -> {
-                                        billingClient.purchases.confirmPurchase(paymentResult.purchaseId)
-                                            .addOnSuccessListener {
-                                                hasPremiumSubscription = true
-                                                hasThreeCardSubscription = false
-                                                saveSubscriptions()
-                                            }
-                                            .addOnFailureListener {
-                                                println("Ошибка подтверждения премиум подписки: ${it.message}")
-                                            }
-                                    }
-                                    is PaymentResult.Cancelled -> {
-                                        println("Покупка премиум подписки отменена пользователем")
-                                    }
-                                    is PaymentResult.Failure -> {
-                                        println("Ошибка покупки премиум подписки: ${paymentResult.errorCode}")
-                                    }
-                                    PaymentResult.InvalidPaymentState -> {
-                                        println("Некорректное состояние оплаты премиум подписки")
-                                    }
-                                    else -> {
-                                        println("Неизвестный результат оплаты премиум подписки")
-                                    }
-                                }
-                            }.addOnFailureListener {
-                                println("Ошибка вызова покупки премиум подписки: ${it.message}")
-                            }
-                        },
-                        onNavigateToTarotScreens = {
-                            navController.navigate("tarot")
-                        }
+                        onThreeCardSubscribe = { /* Ваш код */ },
+                        onPremiumSubscribe = { /* Ваш код */ },
+                        onNavigateToTarotScreens = { navController.navigate("tarot") }
                     )
                 }
-
                 composable("tarot") {
                     TarotScreens(
                         navigateToSingleCard = { navController.navigate("single") },
@@ -202,6 +133,21 @@ fun MainApp(billingClient: RuStoreBillingClient) {
                         hasThreeCardSubscription = hasThreeCardSubscription,
                         hasPremiumSubscription = hasPremiumSubscription
                     )
+                }
+                composable("single") {
+                    SingleCardScreen(isSubscribed = hasPremiumSubscription || hasThreeCardSubscription)
+                }
+                composable("three") {
+                    MultiCardScreen(numCards = 3, isSubscribed = hasThreeCardSubscription || hasPremiumSubscription)
+                }
+                composable("five") {
+                    PremiumTarotScreen(numCards = 5, isSubscribed = hasPremiumSubscription)
+                }
+                composable("ten") {
+                    PremiumTarotScreen(numCards = 10, isSubscribed = hasPremiumSubscription)
+                }
+                composable("history") {
+                    HistoryScreen(isSubscribed = hasThreeCardSubscription || hasPremiumSubscription)
                 }
             }
         }
