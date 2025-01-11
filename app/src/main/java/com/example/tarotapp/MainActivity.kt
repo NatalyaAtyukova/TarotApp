@@ -29,8 +29,8 @@ class MainActivity : ComponentActivity() {
         // Инициализация RuStoreBillingClient
         billingClient = RuStoreBillingClientFactory.create(
             context = this,
-            consoleApplicationId = "2063587401", // Укажите свой ID из RuStore Консоли
-            deeplinkScheme = "com.example.tarotapp" // Укажите схему deeplink
+            consoleApplicationId = "2063587401",
+            deeplinkScheme = "com.example.tarotapp"
         )
 
         setContent {
@@ -47,21 +47,27 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainApp(billingClient: RuStoreBillingClient) {
     val context = LocalContext.current
-    val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences("subscriptions", Context.MODE_PRIVATE)
+    val sharedPreferences = context.getSharedPreferences("subscriptions", Context.MODE_PRIVATE)
 
     val navController = rememberNavController()
 
     var hasThreeCardSubscription by remember { mutableStateOf(false) }
     var hasPremiumSubscription by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // Отслеживаем текущий маршрут
+    // Проверка состояния подписок при запуске приложения
+    LaunchedEffect(Unit) {
+        updateSubscriptionsStatus(billingClient, sharedPreferences) { threeCard, premium ->
+            hasThreeCardSubscription = threeCard
+            hasPremiumSubscription = premium
+        }
+    }
+
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     Scaffold(
         topBar = {
-            // TabRow обновляется в зависимости от текущего маршрута
             TabRow(
                 selectedTabIndex = when (currentRoute) {
                     "subscription" -> 0
@@ -103,64 +109,33 @@ fun MainApp(billingClient: RuStoreBillingClient) {
                     SubscriptionScreen(
                         hasThreeCardSubscription = hasThreeCardSubscription,
                         hasPremiumSubscription = hasPremiumSubscription,
-                        onThreeCardSubscribe = { isActivating ->
+                        onThreeCardSubscribe = {
                             isLoading = true
-                            billingClient.purchases.purchaseProduct(
-                                productId = "three_card_subscription",
-                                orderId = "three_card_order_${System.currentTimeMillis()}",
-                                quantity = 1,
-                                developerPayload = null
-                            ).addOnSuccessListener { result ->
-                                if (result is PaymentResult.Success) {
-                                    billingClient.purchases.confirmPurchase(result.purchaseId)
-                                        .addOnSuccessListener {
-                                            hasThreeCardSubscription = isActivating
-                                            saveSubscriptions(sharedPreferences)
-                                            isLoading = false
-                                        }
-                                        .addOnFailureListener {
-                                            println("Ошибка подтверждения подписки: ${it.message}")
-                                            isLoading = false
-                                        }
-                                } else {
-                                    println("Ошибка покупки: ${result}")
-                                    isLoading = false
-                                }
-                            }.addOnFailureListener {
-                                println("Ошибка вызова RuStore: ${it.message}")
+                            handleSubscriptionPurchase(
+                                billingClient,
+                                sharedPreferences,
+                                productId = "three_card_subscription"
+                            ) { threeCard, premium ->
+                                hasThreeCardSubscription = threeCard
+                                hasPremiumSubscription = premium
                                 isLoading = false
                             }
                         },
-                        onPremiumSubscribe = { isActivating ->
+                        onPremiumSubscribe = {
                             isLoading = true
-                            billingClient.purchases.purchaseProduct(
-                                productId = "premium_monthly_subscription",
-                                orderId = "premium_order_${System.currentTimeMillis()}",
-                                quantity = 1,
-                                developerPayload = null
-                            ).addOnSuccessListener { result ->
-                                if (result is PaymentResult.Success) {
-                                    billingClient.purchases.confirmPurchase(result.purchaseId)
-                                        .addOnSuccessListener {
-                                            hasPremiumSubscription = isActivating
-                                            saveSubscriptions(sharedPreferences)
-                                            isLoading = false
-                                        }
-                                        .addOnFailureListener {
-                                            println("Ошибка подтверждения подписки: ${it.message}")
-                                            isLoading = false
-                                        }
-                                } else {
-                                    println("Ошибка покупки: ${result}")
-                                    isLoading = false
-                                }
-                            }.addOnFailureListener {
-                                println("Ошибка вызова RuStore: ${it.message}")
+                            handleSubscriptionPurchase(
+                                billingClient,
+                                sharedPreferences,
+                                productId = "premium_monthly_subscription"
+                            ) { threeCard, premium ->
+                                hasThreeCardSubscription = threeCard
+                                hasPremiumSubscription = premium
                                 isLoading = false
                             }
                         },
                         onNavigateToTarotScreens = { navController.navigate("tarot") },
-                        isLoading = isLoading
+                        isLoading = isLoading,
+                        errorMessage = errorMessage
                     )
                 }
                 composable("tarot") {
@@ -206,10 +181,65 @@ fun MainApp(billingClient: RuStoreBillingClient) {
     )
 }
 
-fun saveSubscriptions(sharedPreferences: SharedPreferences) {
-    sharedPreferences.edit().apply {
-        putBoolean("hasThreeCardSubscription", true)
-        putBoolean("hasPremiumSubscription", true)
-        apply()
-    }
+fun handleSubscriptionPurchase(
+    billingClient: RuStoreBillingClient,
+    sharedPreferences: SharedPreferences,
+    productId: String,
+    onUpdate: (Boolean, Boolean) -> Unit
+) {
+    billingClient.purchases.getPurchases()
+        .addOnSuccessListener { purchases ->
+            if (purchases.any { it.productId == productId }) {
+                println("Подписка $productId уже активна")
+                updateSubscriptionsStatus(billingClient, sharedPreferences, onUpdate)
+                return@addOnSuccessListener
+            }
+
+            billingClient.purchases.purchaseProduct(
+                productId = productId,
+                orderId = "${productId}_order_${System.currentTimeMillis()}",
+                quantity = 1,
+                developerPayload = null
+            ).addOnSuccessListener { result ->
+                if (result is PaymentResult.Success) {
+                    billingClient.purchases.confirmPurchase(result.purchaseId)
+                        .addOnSuccessListener {
+                            updateSubscriptionsStatus(billingClient, sharedPreferences, onUpdate)
+                        }
+                        .addOnFailureListener { error ->
+                            println("Ошибка подтверждения подписки: ${error.message}")
+                        }
+                } else {
+                    println("Ошибка покупки: $result")
+                }
+            }.addOnFailureListener { error ->
+                println("Ошибка вызова RuStore: ${error.message}")
+            }
+        }
+        .addOnFailureListener { error ->
+            println("Ошибка получения списка покупок: ${error.message}")
+        }
+}
+
+fun updateSubscriptionsStatus(
+    billingClient: RuStoreBillingClient,
+    sharedPreferences: SharedPreferences,
+    onUpdate: (Boolean, Boolean) -> Unit
+) {
+    billingClient.purchases.getPurchases()
+        .addOnSuccessListener { purchases ->
+            val hasThreeCard = purchases.any { it.productId == "three_card_subscription" }
+            val hasPremium = purchases.any { it.productId == "premium_monthly_subscription" }
+
+            sharedPreferences.edit().apply {
+                putBoolean("hasThreeCardSubscription", hasThreeCard)
+                putBoolean("hasPremiumSubscription", hasPremium)
+                apply()
+            }
+
+            onUpdate(hasThreeCard, hasPremium)
+        }
+        .addOnFailureListener { error ->
+            println("Ошибка получения подписок: ${error.message}")
+        }
 }

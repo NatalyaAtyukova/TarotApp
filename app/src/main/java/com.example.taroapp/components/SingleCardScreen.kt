@@ -1,5 +1,6 @@
 package com.example.tarotapp.components
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -18,14 +19,20 @@ import kotlin.random.Random
 @Composable
 fun SingleCardScreen(isSubscribed: Boolean) {
     val context = LocalContext.current
+    val sharedPreferences = context.getSharedPreferences("tarot_prefs", Context.MODE_PRIVATE)
+
+    // Загружаем количество оставшихся попыток из SharedPreferences
     var selectedCard by remember { mutableStateOf<TarotCard?>(null) }
-    var remainingAttempts by remember { mutableStateOf(3) }
+    var remainingAttempts by remember {
+        mutableStateOf(sharedPreferences.getInt("remaining_attempts", 3)) // Дефолтное значение — 3
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        // Отображение выбранной карты или подсказки
         if (selectedCard == null) {
             Text("Выберите карту Таро", fontSize = 24.sp)
         } else {
@@ -43,19 +50,28 @@ fun SingleCardScreen(isSubscribed: Boolean) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(onClick = {
-            if (isSubscribed || remainingAttempts > 0) {
-                selectedCard = tarotCards[Random.nextInt(tarotCards.size)]
-                if (!isSubscribed) remainingAttempts--
-            } else {
-                Toast.makeText(context, "Лимит гаданий на сегодня исчерпан!", Toast.LENGTH_SHORT).show()
-            }
-        }) {
+        // Кнопка вытягивания карты
+        Button(
+            onClick = {
+                if (isSubscribed || remainingAttempts > 0) {
+                    selectedCard = tarotCards[Random.nextInt(tarotCards.size)]
+                    if (!isSubscribed) {
+                        remainingAttempts--
+                        sharedPreferences.edit().putInt("remaining_attempts", remainingAttempts).apply() // Сохраняем обновленное значение
+                    }
+                } else {
+                    Toast.makeText(context, "Лимит гаданий на сегодня исчерпан!", Toast.LENGTH_SHORT).show()
+                }
+            },
+            enabled = isSubscribed || remainingAttempts > 0 // Кнопка отключается, если попыток больше нет
+        ) {
             Text("Вытянуть карту")
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Информация о количестве оставшихся попыток
         if (!isSubscribed) {
-            Spacer(modifier = Modifier.height(16.dp))
             Text("Осталось гаданий: $remainingAttempts", fontSize = 14.sp)
         }
     }
