@@ -51,16 +51,14 @@ fun MainApp(billingClient: RuStoreBillingClient) {
 
     val navController = rememberNavController()
 
-    var hasThreeCardSubscription by remember { mutableStateOf(false) }
-    var hasPremiumSubscription by remember { mutableStateOf(false) }
+    var currentSubscription by remember { mutableStateOf<ProductSubscription?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     // Проверка состояния подписок при запуске приложения
     LaunchedEffect(Unit) {
-        updateSubscriptionsStatus(billingClient, sharedPreferences) { threeCard, premium ->
-            hasThreeCardSubscription = threeCard
-            hasPremiumSubscription = premium
+        updateSubscriptionsStatus(billingClient, sharedPreferences) { subscription ->
+            currentSubscription = subscription
         }
     }
 
@@ -107,33 +105,19 @@ fun MainApp(billingClient: RuStoreBillingClient) {
             ) {
                 composable("subscription") {
                     SubscriptionScreen(
-                        hasThreeCardSubscription = hasThreeCardSubscription,
-                        hasPremiumSubscription = hasPremiumSubscription,
-                        onThreeCardSubscribe = {
-                            isLoading = true
-                            handleSubscriptionPurchase(
-                                billingClient,
-                                sharedPreferences,
-                                productId = "three_card_subscription"
-                            ) { threeCard, premium ->
-                                hasThreeCardSubscription = threeCard
-                                hasPremiumSubscription = premium
-                                isLoading = false
-                            }
-                        },
-                        onPremiumSubscribe = {
-                            isLoading = true
-                            handleSubscriptionPurchase(
-                                billingClient,
-                                sharedPreferences,
-                                productId = "premium_monthly_subscription"
-                            ) { threeCard, premium ->
-                                hasThreeCardSubscription = threeCard
-                                hasPremiumSubscription = premium
-                                isLoading = false
-                            }
-                        },
+                        currentSubscription = currentSubscription,
                         onNavigateToTarotScreens = { navController.navigate("tarot") },
+                        onSubscribe = { productId ->
+                            isLoading = true
+                            handleSubscriptionPurchase(
+                                billingClient,
+                                sharedPreferences,
+                                productId
+                            ) { subscription ->
+                                currentSubscription = subscription
+                                isLoading = false
+                            }
+                        },
                         isLoading = isLoading,
                         errorMessage = errorMessage
                     )
@@ -142,39 +126,39 @@ fun MainApp(billingClient: RuStoreBillingClient) {
                     TarotScreens(
                         navigateToSingleCard = { navController.navigate("single") },
                         navigateToThreeCards = {
-                            if (hasThreeCardSubscription || hasPremiumSubscription) {
+                            if (currentSubscription != null) {
                                 navController.navigate("three")
                             }
                         },
                         navigateToFiveCards = {
-                            if (hasPremiumSubscription) {
+                            if (currentSubscription != null) {
                                 navController.navigate("five")
                             }
                         },
                         navigateToTenCards = {
-                            if (hasPremiumSubscription) {
+                            if (currentSubscription != null) {
                                 navController.navigate("ten")
                             }
                         },
                         navigateToHistory = { navController.navigate("history") },
-                        hasThreeCardSubscription = hasThreeCardSubscription,
-                        hasPremiumSubscription = hasPremiumSubscription
+                        hasThreeCardSubscription = currentSubscription != null,
+                        hasPremiumSubscription = currentSubscription != null
                     )
                 }
                 composable("single") {
-                    SingleCardScreen(isSubscribed = hasPremiumSubscription || hasThreeCardSubscription)
+                    SingleCardScreen(isSubscribed = currentSubscription != null)
                 }
                 composable("three") {
-                    MultiCardScreen(numCards = 3, isSubscribed = hasThreeCardSubscription || hasPremiumSubscription)
+                    MultiCardScreen(numCards = 3, isSubscribed = currentSubscription != null)
                 }
                 composable("five") {
-                    PremiumTarotScreen(numCards = 5, isSubscribed = hasPremiumSubscription)
+                    PremiumTarotScreen(numCards = 5, isSubscribed = currentSubscription != null)
                 }
                 composable("ten") {
-                    PremiumTarotScreen(numCards = 10, isSubscribed = hasPremiumSubscription)
+                    PremiumTarotScreen(numCards = 10, isSubscribed = currentSubscription != null)
                 }
                 composable("history") {
-                    HistoryScreen(isSubscribed = hasThreeCardSubscription || hasPremiumSubscription)
+                    HistoryScreen(isSubscribed = currentSubscription != null)
                 }
             }
         }
@@ -185,61 +169,60 @@ fun handleSubscriptionPurchase(
     billingClient: RuStoreBillingClient,
     sharedPreferences: SharedPreferences,
     productId: String,
-    onUpdate: (Boolean, Boolean) -> Unit
+    onUpdate: (ProductSubscription?) -> Unit
 ) {
-    billingClient.purchases.getPurchases()
-        .addOnSuccessListener { purchases ->
-            if (purchases.any { it.productId == productId }) {
-                println("Подписка $productId уже активна")
-                updateSubscriptionsStatus(billingClient, sharedPreferences, onUpdate)
-                return@addOnSuccessListener
-            }
-
-            billingClient.purchases.purchaseProduct(
-                productId = productId,
-                orderId = "${productId}_order_${System.currentTimeMillis()}",
-                quantity = 1,
-                developerPayload = null
-            ).addOnSuccessListener { result ->
-                if (result is PaymentResult.Success) {
-                    billingClient.purchases.confirmPurchase(result.purchaseId)
-                        .addOnSuccessListener {
-                            updateSubscriptionsStatus(billingClient, sharedPreferences, onUpdate)
-                        }
-                        .addOnFailureListener { error ->
-                            println("Ошибка подтверждения подписки: ${error.message}")
-                        }
-                } else {
-                    println("Ошибка покупки: $result")
+    billingClient.purchases.purchaseProduct(
+        productId = productId,
+        orderId = "order_${System.currentTimeMillis()}",
+        quantity = 1
+    ).addOnSuccessListener { result ->
+        if (result is PaymentResult.Success) {
+            billingClient.purchases.confirmPurchase(result.purchaseId)
+                .addOnSuccessListener {
+                    updateSubscriptionsStatus(billingClient, sharedPreferences, onUpdate)
                 }
-            }.addOnFailureListener { error ->
-                println("Ошибка вызова RuStore: ${error.message}")
-            }
+                .addOnFailureListener { error ->
+                    println("Ошибка подтверждения подписки: ${error.message}")
+                    onUpdate(null)
+                }
+        } else {
+            println("Ошибка покупки: $result")
+            onUpdate(null)
         }
-        .addOnFailureListener { error ->
-            println("Ошибка получения списка покупок: ${error.message}")
-        }
+    }.addOnFailureListener { error ->
+        println("Ошибка вызова RuStore: ${error.message}")
+        onUpdate(null)
+    }
 }
 
 fun updateSubscriptionsStatus(
     billingClient: RuStoreBillingClient,
     sharedPreferences: SharedPreferences,
-    onUpdate: (Boolean, Boolean) -> Unit
+    onUpdate: (ProductSubscription?) -> Unit
 ) {
     billingClient.purchases.getPurchases()
         .addOnSuccessListener { purchases ->
-            val hasThreeCard = purchases.any { it.productId == "three_card_subscription" }
-            val hasPremium = purchases.any { it.productId == "premium_monthly_subscription" }
+            val threeCard = purchases.find { it.productId == "three_card_subscription" }
+            val premium = purchases.find { it.productId == "premium_monthly_subscription" }
+
+            val subscription = ProductSubscription(
+                subscriptionPeriod = null, // Replace with actual subscription period if available
+                freeTrialPeriod = null, // Replace with actual free trial period if available
+                gracePeriod = null, // Replace with actual grace period if available
+                introductoryPrice = null, // Replace with actual price info if available
+                introductoryPriceAmount = null, // Replace with actual price amount if available
+                introductoryPricePeriod = null // Replace with actual period if available
+            )
 
             sharedPreferences.edit().apply {
-                putBoolean("hasThreeCardSubscription", hasThreeCard)
-                putBoolean("hasPremiumSubscription", hasPremium)
+                putString("currentSubscription", subscription.toString())
                 apply()
             }
 
-            onUpdate(hasThreeCard, hasPremium)
+            onUpdate(subscription)
         }
         .addOnFailureListener { error ->
             println("Ошибка получения подписок: ${error.message}")
+            onUpdate(null)
         }
 }

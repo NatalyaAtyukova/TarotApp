@@ -10,12 +10,15 @@ android {
 
     defaultConfig {
         applicationId = "com.example.tarotapp"
-        minSdk = 29
+        minSdk = 24
         targetSdk = 34
-        versionCode = 5
-        versionName = "2.1"
+        versionCode = 1
+        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
 
     signingConfigs {
@@ -44,21 +47,27 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "1.8"
     }
     buildFeatures {
         compose = true
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.1"
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
     sourceSets {
         getByName("main") {
             java {
-                srcDirs("src/main/java", "src/main/java/com.example.taroapp/components",
-                    "src/main/java/utils", "src/main/java/com.exapmle.tarotapp/utils"
-                )
+                srcDirs("src/main/java")
             }
         }
     }
@@ -90,9 +99,22 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.6.0-alpha01")
     // Material Design
     implementation("androidx.compose.material3:material3:1.1.0")
-    implementation("androidx.compose.material:material-icons-core:1.4.0")
-    implementation("androidx.compose.material:material-icons-extended:1.4.0")
+    implementation("androidx.compose.material:material-icons-core:1.5.4")
+    implementation("androidx.compose.material:material-icons-extended:1.5.4")
     // Другие зависимости Compose
-    implementation("androidx.compose.ui:ui:1.4.0")
-    implementation("androidx.compose.runtime:runtime:1.4.0")
+    implementation("androidx.compose.ui:ui:1.5.4")
+    implementation("androidx.compose.runtime:runtime:1.5.4")
+    
+    // Coil
+    implementation("io.coil-kt:coil:2.5.0")
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    
+    // Accompanist
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+    implementation("com.google.accompanist:accompanist-pager:0.32.0")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.32.0")
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.32.0")
+    implementation("com.google.accompanist:accompanist-placeholder:0.32.0")
+    implementation("com.google.accompanist:accompanist-flowlayout:0.32.0")
 }
