@@ -6,6 +6,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -18,13 +21,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tarotapp.TarotCard
 import com.example.tarotapp.tarotCards
-import com.example.tarotapp.utils.HistoryManager.saveTarotSpread
+import com.example.tarotapp.utils.HistoryManager
 import com.google.accompanist.flowlayout.FlowRow
 import java.text.SimpleDateFormat
 import java.util.*
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 
 @Composable
 private fun KeywordChip(keyword: String) {
@@ -45,12 +51,15 @@ private fun KeywordChip(keyword: String) {
 
 @Composable
 private fun KeywordsList(keywords: List<String>) {
-    FlowRow(
-        modifier = Modifier.padding(bottom = 8.dp),
-        mainAxisSpacing = 8.dp,
-        crossAxisSpacing = 8.dp
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .padding(bottom = 8.dp)
+            .height(120.dp)
     ) {
-        keywords.forEach { keyword ->
+        items(keywords) { keyword ->
             KeywordChip(keyword)
         }
     }
@@ -58,7 +67,7 @@ private fun KeywordsList(keywords: List<String>) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean) {
+fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () -> Unit = {}) {
     val context = LocalContext.current
     var selectedCards by rememberSaveable {
         mutableStateOf(tarotCards.shuffled().take(numCards))
@@ -71,13 +80,37 @@ fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            "Ваш расклад",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                onClick = onNavigateBack,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Назад",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+            
+            Spacer(modifier = Modifier.width(8.dp))
+            
+            Text(
+                text = when (numCards) {
+                    5 -> "Премиум расклад: Пять карт"
+                    10 -> "Премиум расклад: Кельтский крест"
+                    else -> "Премиум расклад: $numCards карт"
+                },
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.weight(1f)
+            )
+        }
 
         LazyColumn(
             modifier = Modifier.weight(1f),
@@ -205,7 +238,7 @@ fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean) {
             Button(
                 onClick = {
                     val currentDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-                    saveTarotSpread(context, selectedCards, currentDate)
+                    HistoryManager.saveTarotSpread(context, selectedCards, currentDate)
                     isSaved = true
                 },
                 modifier = Modifier.weight(1f),

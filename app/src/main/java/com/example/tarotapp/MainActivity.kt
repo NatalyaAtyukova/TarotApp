@@ -6,19 +6,33 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.padding
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Subscriptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.tarotapp.components.*
+import com.example.tarotapp.ui.theme.TarotAppTheme
 import ru.rustore.sdk.billingclient.RuStoreBillingClient
 import ru.rustore.sdk.billingclient.RuStoreBillingClientFactory
 import ru.rustore.sdk.billingclient.model.purchase.PaymentResult
-import com.example.tarotapp.components.*
 
 class MainActivity : ComponentActivity() {
     private lateinit var billingClient: RuStoreBillingClient
@@ -34,7 +48,14 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            MainApp(billingClient)
+            TarotAppTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    MainApp(billingClient)
+                }
+            }
         }
     }
 
@@ -44,12 +65,32 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+sealed class Screen(val route: String, val icon: @Composable () -> Unit, val label: String) {
+    object Home : Screen(
+        "tarot",
+        { Icon(Icons.Filled.Home, contentDescription = "Главная") },
+        "Главная"
+    )
+    object History : Screen(
+        "history",
+        { Icon(Icons.Filled.History, contentDescription = "История") },
+        "История"
+    )
+    object Subscription : Screen(
+        "subscription",
+        { Icon(Icons.Filled.Subscriptions, contentDescription = "Подписки") },
+        "Подписки"
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun MainApp(billingClient: RuStoreBillingClient) {
     val context = LocalContext.current
     val sharedPreferences = context.getSharedPreferences("subscriptions", Context.MODE_PRIVATE)
 
     val navController = rememberNavController()
+    val items = listOf(Screen.Home, Screen.History, Screen.Subscription)
 
     var currentSubscription by remember { mutableStateOf<ProductSubscription?>(null) }
     var isLoading by remember { mutableStateOf(false) }
@@ -62,107 +103,177 @@ fun MainApp(billingClient: RuStoreBillingClient) {
         }
     }
 
-    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
 
     Scaffold(
-        topBar = {
-            TabRow(
-                selectedTabIndex = when (currentRoute) {
-                    "subscription" -> 0
-                    "tarot", "single", "three", "five", "ten", "history" -> 1
-                    else -> 0
-                }
+        bottomBar = {
+            NavigationBar(
+                containerColor = MaterialTheme.colorScheme.surface,
+                tonalElevation = 8.dp
             ) {
-                Tab(
-                    selected = currentRoute == "subscription",
-                    onClick = {
-                        if (currentRoute != "subscription") {
-                            navController.navigate("subscription") {
-                                popUpTo("subscription") { inclusive = false }
+                items.forEach { screen ->
+                    val selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
+                    
+                    NavigationBarItem(
+                        icon = { 
+                            AnimatedContent(
+                                targetState = selected,
+                                transitionSpec = {
+                                    fadeIn(animationSpec = tween(150, 150)).togetherWith(
+                                    fadeOut(animationSpec = tween(150)))
+                                }
+                            ) { isSelected ->
+                                Box(
+                                    modifier = Modifier.size(24.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    screen.icon()
+                                }
+                            }
+                        },
+                        label = { 
+                            Text(
+                                text = screen.label,
+                                style = MaterialTheme.typography.labelMedium
+                            ) 
+                        },
+                        selected = selected,
+                        onClick = {
+                            navController.navigate(screen.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
                             }
                         }
-                    },
-                    text = { Text("Подписки") }
-                )
-                Tab(
-                    selected = currentRoute in listOf("tarot", "single", "three", "five", "ten", "history"),
-                    onClick = {
-                        if (currentRoute !in listOf("tarot", "single", "three", "five", "ten", "history")) {
-                            navController.navigate("tarot") {
-                                popUpTo("tarot") { inclusive = false }
-                            }
-                        }
-                    },
-                    text = { Text("Экраны Таро") }
-                )
-            }
-        },
-        content = { paddingValues ->
-            NavHost(
-                navController = navController,
-                startDestination = "subscription",
-                modifier = Modifier.padding(paddingValues)
-            ) {
-                composable("subscription") {
-                    SubscriptionScreen(
-                        currentSubscription = currentSubscription,
-                        onNavigateToTarotScreens = { navController.navigate("tarot") },
-                        onSubscribe = { productId ->
-                            isLoading = true
-                            handleSubscriptionPurchase(
-                                billingClient,
-                                sharedPreferences,
-                                productId
-                            ) { subscription ->
-                                currentSubscription = subscription
-                                isLoading = false
-                            }
-                        },
-                        isLoading = isLoading,
-                        errorMessage = errorMessage
                     )
-                }
-                composable("tarot") {
-                    TarotScreens(
-                        navigateToSingleCard = { navController.navigate("single") },
-                        navigateToThreeCards = {
-                            if (currentSubscription != null) {
-                                navController.navigate("three")
-                            }
-                        },
-                        navigateToFiveCards = {
-                            if (currentSubscription != null) {
-                                navController.navigate("five")
-                            }
-                        },
-                        navigateToTenCards = {
-                            if (currentSubscription != null) {
-                                navController.navigate("ten")
-                            }
-                        },
-                        navigateToHistory = { navController.navigate("history") },
-                        hasThreeCardSubscription = currentSubscription != null,
-                        hasPremiumSubscription = currentSubscription != null
-                    )
-                }
-                composable("single") {
-                    SingleCardScreen(isSubscribed = currentSubscription != null)
-                }
-                composable("three") {
-                    MultiCardScreen(numCards = 3, isSubscribed = currentSubscription != null)
-                }
-                composable("five") {
-                    PremiumTarotScreen(numCards = 5, isSubscribed = currentSubscription != null)
-                }
-                composable("ten") {
-                    PremiumTarotScreen(numCards = 10, isSubscribed = currentSubscription != null)
-                }
-                composable("history") {
-                    HistoryScreen(isSubscribed = currentSubscription != null)
                 }
             }
         }
-    )
+    ) { paddingValues ->
+        NavHost(
+            navController = navController,
+            startDestination = "tarot",
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            composable(
+                "tarot",
+                enterTransition = { fadeIn(animationSpec = tween(300)) },
+                exitTransition = { fadeOut(animationSpec = tween(300)) }
+            ) {
+                TarotScreens(
+                    navigateToSingleCard = { navController.navigate("single") },
+                    navigateToThreeCards = {
+                        if (currentSubscription != null) {
+                            navController.navigate("three")
+                        }
+                    },
+                    navigateToFiveCards = {
+                        if (currentSubscription != null) {
+                            navController.navigate("five")
+                        }
+                    },
+                    navigateToTenCards = {
+                        if (currentSubscription != null) {
+                            navController.navigate("ten")
+                        }
+                    },
+                    navigateToHistory = { navController.navigate("history") },
+                    hasThreeCardSubscription = currentSubscription != null,
+                    hasPremiumSubscription = currentSubscription != null
+                )
+            }
+            
+            composable(
+                "single",
+                enterTransition = { slideInHorizontally() + fadeIn() },
+                exitTransition = { slideOutHorizontally() + fadeOut() },
+                popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) + fadeIn() },
+                popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() }
+            ) {
+                SingleCardScreen(
+                    isSubscribed = currentSubscription != null,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            
+            composable(
+                "three",
+                enterTransition = { slideInHorizontally() + fadeIn() },
+                exitTransition = { slideOutHorizontally() + fadeOut() },
+                popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) + fadeIn() },
+                popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() }
+            ) {
+                MultiCardScreen(
+                    numCards = 3, 
+                    isSubscribed = currentSubscription != null,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            
+            composable(
+                "five",
+                enterTransition = { slideInHorizontally() + fadeIn() },
+                exitTransition = { slideOutHorizontally() + fadeOut() },
+                popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) + fadeIn() },
+                popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() }
+            ) {
+                PremiumTarotScreen(
+                    numCards = 5, 
+                    isSubscribed = currentSubscription != null,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            
+            composable(
+                "ten",
+                enterTransition = { slideInHorizontally() + fadeIn() },
+                exitTransition = { slideOutHorizontally() + fadeOut() },
+                popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) + fadeIn() },
+                popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() }
+            ) {
+                PremiumTarotScreen(
+                    numCards = 10, 
+                    isSubscribed = currentSubscription != null,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            
+            composable(
+                "history",
+                enterTransition = { fadeIn(animationSpec = tween(300)) },
+                exitTransition = { fadeOut(animationSpec = tween(300)) }
+            ) {
+                HistoryScreen(isSubscribed = currentSubscription != null)
+            }
+            
+            composable(
+                "subscription",
+                enterTransition = { fadeIn(animationSpec = tween(300)) },
+                exitTransition = { fadeOut(animationSpec = tween(300)) }
+            ) {
+                SubscriptionScreen(
+                    currentSubscription = currentSubscription,
+                    onNavigateToTarotScreens = { navController.navigate("tarot") },
+                    onSubscribe = { productId ->
+                        isLoading = true
+                        handleSubscriptionPurchase(
+                            billingClient,
+                            sharedPreferences,
+                            productId
+                        ) { subscription ->
+                            currentSubscription = subscription
+                            isLoading = false
+                        }
+                    },
+                    isLoading = isLoading,
+                    errorMessage = errorMessage
+                )
+            }
+        }
+    }
 }
 
 fun handleSubscriptionPurchase(
