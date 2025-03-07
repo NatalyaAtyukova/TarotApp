@@ -21,11 +21,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tarotapp.TarotCard
 import com.example.tarotapp.tarotCards
+import com.example.tarotapp.utils.HistoryManager
 import com.google.accompanist.flowlayout.FlowRow
 import kotlin.random.Random
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 private fun KeywordChip(keyword: String) {
@@ -218,6 +221,30 @@ fun SingleCardScreen(isSubscribed: Boolean) {
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
+        }
+
+        selectedCard?.let {
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Button(
+                onClick = {
+                    val currentDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+                    HistoryManager.saveTarotSpread(context, listOf(selectedCard!!), currentDate)
+                    Toast.makeText(context, "Расклад сохранен!", Toast.LENGTH_SHORT).show()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary
+                )
+            ) {
+                Text(
+                    "Сохранить расклад",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 } 

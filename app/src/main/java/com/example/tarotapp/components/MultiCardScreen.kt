@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tarotapp.TarotCard
 import com.example.tarotapp.tarotCards
-import com.example.tarotapp.utils.HistoryManager.saveTarotSpread
+import com.example.tarotapp.utils.HistoryManager
 import com.google.accompanist.flowlayout.FlowRow
 import java.text.SimpleDateFormat
 import java.util.*
@@ -201,8 +201,9 @@ fun MultiCardScreen(numCards: Int, isSubscribed: Boolean) {
             Button(
                 onClick = {
                     val currentDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-                    saveTarotSpread(context, selectedCards, currentDate)
+                    HistoryManager.saveTarotSpread(context, selectedCards, currentDate)
                     isSaved = true
+                    Toast.makeText(context, "Расклад сохранен!", Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(
