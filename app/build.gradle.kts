@@ -29,7 +29,7 @@ android {
             keyPassword = "android"
         }
         create("release") {
-            storeFile = file("/Volumes/KINGSTON/AndroidStudioProjects/Keystore_TarotApp/keystore/tarotapp-release-key.jks")
+            storeFile = file("../keystore/tarotapp-release-key.jks")
             storePassword = "s7(F4*Clj0"
             keyAlias = "tarotapp_key_alias"
             keyPassword = "s7(F4*Clj0"
