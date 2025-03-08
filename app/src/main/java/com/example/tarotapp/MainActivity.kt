@@ -90,18 +90,28 @@ fun MainApp(billingClient: RuStoreBillingClient) {
     val sharedPreferences = context.getSharedPreferences("subscriptions", Context.MODE_PRIVATE)
 
     val navController = rememberNavController()
-    val items = listOf(Screen.Home, Screen.History, Screen.Subscription)
+    val items = listOf(Screen.Home, Screen.History)
 
-    var currentSubscription by remember { mutableStateOf<ProductSubscription?>(null) }
+    var currentSubscription by remember { mutableStateOf<ProductSubscription?>(
+        // Создаем фиктивную подписку, чтобы все экраны были доступны
+        ProductSubscription(
+            subscriptionPeriod = null,
+            freeTrialPeriod = null,
+            gracePeriod = null,
+            introductoryPrice = null,
+            introductoryPriceAmount = null,
+            introductoryPricePeriod = null
+        )
+    ) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // Проверка состояния подписок при запуске приложения
-    LaunchedEffect(Unit) {
-        updateSubscriptionsStatus(billingClient, sharedPreferences) { subscription ->
-            currentSubscription = subscription
-        }
-    }
+    // Проверка состояния подписок при запуске приложения закомментирована
+    // LaunchedEffect(Unit) {
+    //     updateSubscriptionsStatus(billingClient, sharedPreferences) { subscription ->
+    //         currentSubscription = subscription
+    //     }
+    // }
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
