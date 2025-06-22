@@ -12,8 +12,8 @@ android {
         applicationId = "com.example.tarotapp"
         minSdk = 24
         targetSdk = 34
-        versionCode = 7
-        versionName = "7.0"
+        versionCode = 9
+        versionName = "9.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -121,4 +121,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-swiperefresh:0.32.0")
     implementation("com.google.accompanist:accompanist-placeholder:0.32.0")
     implementation("com.google.accompanist:accompanist-flowlayout:0.32.0")
+
+    // Яндекс Mobile Ads SDK
+    implementation("com.yandex.android:mobileads:7.14.0")
 }

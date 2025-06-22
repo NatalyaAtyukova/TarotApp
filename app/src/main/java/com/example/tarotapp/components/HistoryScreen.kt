@@ -13,97 +13,111 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tarotapp.utils.HistoryManager
+import com.example.tarotapp.utils.YandexBannerAd
+import com.example.tarotapp.utils.showYandexInterstitialAd
+import androidx.compose.material3.Scaffold
 
 @Composable
 fun HistoryScreen(isSubscribed: Boolean) {
     val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        showYandexInterstitialAd(context, adUnitId = "R-M-14492209-1")
+    }
     var history by remember { mutableStateOf(HistoryManager.loadHistory(context)) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Сохранённые расклады",
-            fontSize = 24.sp,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        if (!isSubscribed) {
-            Text(
-                text = "Доступ к истории доступен только для подписчиков.",
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 32.dp),
-                textAlign = TextAlign.Center
-            )
-            return
+    Scaffold(
+        bottomBar = {
+            if (isSubscribed) {
+                YandexBannerAd(modifier = Modifier.fillMaxWidth())
+            }
         }
-
-        if (history.isEmpty()) {
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
-                text = "История пустая. Сохраните свои первые расклады!",
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.padding(top = 32.dp),
-                textAlign = TextAlign.Center
+                text = "Сохранённые расклады",
+                fontSize = 24.sp,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 16.dp)
             )
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                items(history) { spread ->
-                    Column(
+
+            if (!isSubscribed) {
+                Text(
+                    text = "Доступ к истории доступен только для подписчиков.",
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 32.dp),
+                    textAlign = TextAlign.Center
+                )
+            } else {
+                if (history.isEmpty()) {
+                    Text(
+                        text = "История пустая. Сохраните свои первые расклады!",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.padding(top = 32.dp),
+                        textAlign = TextAlign.Center
+                    )
+                } else {
+                    LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f),
-                                shape = MaterialTheme.shapes.medium
-                            )
-                            .padding(16.dp)
+                            .weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(vertical = 16.dp)
                     ) {
-                        Text(
-                            "Дата: ${spread.date}",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                        Text(
-                            "Карты:",
-                            fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                        spread.cards.forEach { cardName ->
-                            Text(
-                                "• $cardName",
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-                                modifier = Modifier.padding(start = 8.dp)
-                            )
+                        items(history) { spread ->
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .border(
+                                        width = 1.dp,
+                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f),
+                                        shape = MaterialTheme.shapes.medium
+                                    )
+                                    .padding(16.dp)
+                            ) {
+                                Text(
+                                    "Дата: ${spread.date}",
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                                Text(
+                                    "Карты:",
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                                spread.cards.forEach { cardName ->
+                                    Text(
+                                        "• $cardName",
+                                        fontSize = 14.sp,
+                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+                                        modifier = Modifier.padding(start = 8.dp)
+                                    )
+                                }
+                            }
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {
+                            showConfirmationDialog = true
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    ) {
+                        Text("Очистить историю")
+                    }
                 }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    showConfirmationDialog = true
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-            ) {
-                Text("Очистить историю")
             }
         }
     }

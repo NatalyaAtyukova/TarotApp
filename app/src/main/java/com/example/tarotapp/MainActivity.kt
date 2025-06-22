@@ -33,6 +33,9 @@ import com.example.tarotapp.ui.theme.TarotAppTheme
 import ru.rustore.sdk.billingclient.RuStoreBillingClient
 import ru.rustore.sdk.billingclient.RuStoreBillingClientFactory
 import ru.rustore.sdk.billingclient.model.purchase.PaymentResult
+import com.example.tarotapp.utils.showYandexAppOpenAd
+import com.example.tarotapp.TarotApplication
+import androidx.compose.runtime.collectAsState
 
 class MainActivity : ComponentActivity() {
     private lateinit var billingClient: RuStoreBillingClient
@@ -87,6 +90,16 @@ sealed class Screen(val route: String, val icon: @Composable () -> Unit, val lab
 @Composable
 fun MainApp(billingClient: RuStoreBillingClient) {
     val context = LocalContext.current
+    val isSdkInitialized by TarotApplication.isSdkInitialized.collectAsState()
+    var adShownOnLaunch by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isSdkInitialized) {
+        if (isSdkInitialized && !adShownOnLaunch) {
+            showYandexAppOpenAd(context, adUnitId = "R-M-14492209-2")
+            adShownOnLaunch = true
+        }
+    }
+
     val sharedPreferences = context.getSharedPreferences("subscriptions", Context.MODE_PRIVATE)
 
     val navController = rememberNavController()

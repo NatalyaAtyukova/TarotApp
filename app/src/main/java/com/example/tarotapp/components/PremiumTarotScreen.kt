@@ -34,6 +34,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.background
+import com.example.tarotapp.utils.YandexBannerAd
+import com.example.tarotapp.utils.showYandexInterstitialAd
+import androidx.compose.material3.Scaffold
 
 @Composable
 private fun KeywordChip(keyword: String) {
@@ -73,6 +76,10 @@ private fun KeywordsList(keywords: List<String>) {
 fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () -> Unit = {}) {
     val context = LocalContext.current
     
+    LaunchedEffect(Unit) {
+        showYandexInterstitialAd(context, adUnitId = "R-M-14492209-1")
+    }
+    
     // Инициализируем карты напрямую, без использования remember или rememberSaveable
     // Это должно предотвратить проблемы с сохранением состояния
     val cardsList = remember { mutableStateOf<List<TarotCard>>(emptyList()) }
@@ -96,234 +103,242 @@ fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () 
     
     var isSaved by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                onClick = onNavigateBack,
-                modifier = Modifier.size(48.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Назад",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp)
-                )
-            }
-            
-            Spacer(modifier = Modifier.width(8.dp))
-            
-            Text(
-                text = when (numCards) {
-                    5 -> "Премиум расклад: Пять карт"
-                    10 -> "Премиум расклад: Кельтский крест"
-                    else -> "Премиум расклад: $numCards карт"
-                },
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.weight(1f)
-            )
+    Scaffold(
+        bottomBar = {
+            YandexBannerAd(modifier = Modifier.fillMaxWidth())
         }
-
-        // Проверяем, есть ли карты для отображения
-        if (cardsList.value.isEmpty()) {
-            // Показываем сообщение о загрузке или ошибке
-            Box(
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                IconButton(
+                    onClick = onNavigateBack,
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Назад",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+                
+                Spacer(modifier = Modifier.width(8.dp))
+                
                 Text(
-                    text = "Загрузка карт...",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.primary
+                    text = when (numCards) {
+                        5 -> "Премиум расклад: Пять карт"
+                        10 -> "Премиум расклад: Кельтский крест"
+                        else -> "Премиум расклад: $numCards карт"
+                    },
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.weight(1f)
                 )
             }
-        } else {
-            // Отображаем карты
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(24.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                items(cardsList.value) { card ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp)
+
+            // Проверяем, есть ли карты для отображения
+            if (cardsList.value.isEmpty()) {
+                // Показываем сообщение о загрузке или ошибке
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Загрузка карт...",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            } else {
+                // Отображаем карты
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                    contentPadding = PaddingValues(vertical = 16.dp)
+                ) {
+                    items(cardsList.value) { card ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+                            ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
+                            Column(
+                                modifier = Modifier.padding(16.dp)
                             ) {
-                                Card(
-                                    modifier = Modifier
-                                        .size(100.dp)
-                                        .clip(RoundedCornerShape(8.dp)),
-                                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    // Загружаем изображение
-                                    AsyncImage(
-                                        model = ImageRequest.Builder(context)
-                                            .data("file:///android_asset/" + card.imagePath)
-                                            .crossfade(true)
-                                            .build(),
-                                        contentDescription = card.name,
-                                        modifier = Modifier.fillMaxSize()
-                                    )
+                                    Card(
+                                        modifier = Modifier
+                                            .size(100.dp)
+                                            .clip(RoundedCornerShape(8.dp)),
+                                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                                    ) {
+                                        // Загружаем изображение
+                                        AsyncImage(
+                                            model = ImageRequest.Builder(context)
+                                                .data("file:///android_asset/" + card.imagePath)
+                                                .crossfade(true)
+                                                .build(),
+                                            contentDescription = card.name,
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.width(16.dp))
+
+                                    Column {
+                                        Text(
+                                            card.name,
+                                            fontSize = 18.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                        Text(
+                                            card.description,
+                                            fontSize = 14.sp,
+                                            color = MaterialTheme.colorScheme.onBackground,
+                                            modifier = Modifier.padding(top = 4.dp)
+                                        )
+                                    }
                                 }
 
-                                Spacer(modifier = Modifier.width(16.dp))
+                                Spacer(modifier = Modifier.height(16.dp))
 
-                                Column {
-                                    Text(
-                                        card.name,
-                                        fontSize = 18.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                    Text(
-                                        card.description,
-                                        fontSize = 14.sp,
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        modifier = Modifier.padding(top = 4.dp)
-                                    )
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            Text(
-                                "Ситуация:",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                            Text(
-                                card.situation,
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onBackground,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-
-                            Text(
-                                "Ключевые слова:",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                            KeywordsList(card.keywords)
-
-                            Text(
-                                "Совет:",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                            Text(
-                                card.advice,
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onBackground,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
                                 Text(
-                                    "Стихия: ${card.element}",
-                                    fontSize = 12.sp,
-                                    color = MaterialTheme.colorScheme.secondary
+                                    "Ситуация:",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(bottom = 4.dp)
                                 )
-                                card.planet?.let {
+                                Text(
+                                    card.situation,
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+
+                                Text(
+                                    "Ключевые слова:",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+                                KeywordsList(card.keywords)
+
+                                Text(
+                                    "Совет:",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+                                Text(
+                                    card.advice,
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
                                     Text(
-                                        "Планета: $it",
+                                        "Стихия: ${card.element}",
                                         fontSize = 12.sp,
                                         color = MaterialTheme.colorScheme.secondary
                                     )
+                                    card.planet?.let {
+                                        Text(
+                                            "Планета: $it",
+                                            fontSize = 12.sp,
+                                            color = MaterialTheme.colorScheme.secondary
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Button(
-                    onClick = {
-                        try {
-                            val currentDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-                            HistoryManager.saveTarotSpread(context, cardsList.value, currentDate)
-                            isSaved = true
-                            Toast.makeText(context, "Расклад сохранен!", Toast.LENGTH_SHORT).show()
-                        } catch (e: Exception) {
-                            Toast.makeText(context, "Ошибка при сохранении расклада", Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text("Сохранить расклад")
-                }
-
-                Button(
-                    onClick = {
-                        try {
-                            // Безопасно получаем новые карты
-                            val shuffledCards = if (tarotCards.isNotEmpty()) {
-                                tarotCards.shuffled().take(minOf(numCards, tarotCards.size))
-                            } else {
-                                emptyList()
+                    Button(
+                        onClick = {
+                            try {
+                                val currentDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+                                HistoryManager.saveTarotSpread(context, cardsList.value, currentDate)
+                                isSaved = true
+                                Toast.makeText(context, "Расклад сохранен!", Toast.LENGTH_SHORT).show()
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "Ошибка при сохранении расклада", Toast.LENGTH_SHORT).show()
                             }
-                            cardsList.value = shuffledCards
-                            isSaved = false
-                        } catch (e: Exception) {
-                            Toast.makeText(context, "Ошибка при обновлении расклада", Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
-                    )
-                ) {
-                    Text("Сменить расклад")
-                }
-            }
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Text("Сохранить расклад")
+                    }
 
-            if (isSaved) {
-                Text(
-                    "Расклад сохранён!",
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+                    Button(
+                        onClick = {
+                            try {
+                                // Безопасно получаем новые карты
+                                val shuffledCards = if (tarotCards.isNotEmpty()) {
+                                    tarotCards.shuffled().take(minOf(numCards, tarotCards.size))
+                                } else {
+                                    emptyList()
+                                }
+                                cardsList.value = shuffledCards
+                                isSaved = false
+                                showYandexInterstitialAd(context, adUnitId = "R-M-14492209-1")
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "Ошибка при обновлении расклада", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary
+                        )
+                    ) {
+                        Text("Сменить расклад")
+                    }
+                }
+
+                if (isSaved) {
+                    Text(
+                        "Расклад сохранён!",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
             }
         }
     }
