@@ -71,6 +71,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.animation.ExperimentalAnimationApi
 import kotlin.io.println
 import java.lang.System.currentTimeMillis
+import android.util.Log
 
 class MainActivity : ComponentActivity() {
     private lateinit var billingClient: RuStoreBillingClient
@@ -130,8 +131,11 @@ fun MainApp(billingClient: RuStoreBillingClient) {
 
     LaunchedEffect(isSdkInitialized) {
         if (isSdkInitialized && !adShownOnLaunch) {
+            Log.d("TarotAppAds", "SDK initialized, showing App Open Ad...")
             showYandexAppOpenAd(context, adUnitId = "R-M-14492209-2")
             adShownOnLaunch = true
+        } else {
+            Log.d("TarotAppAds", "SDK not ready yet. isSdkInitialized: $isSdkInitialized, adShownOnLaunch: $adShownOnLaunch")
         }
     }
 

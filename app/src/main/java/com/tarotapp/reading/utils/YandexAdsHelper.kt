@@ -27,6 +27,7 @@ fun YandexBannerAd(
     modifier: Modifier = Modifier,
     adUnitId: String = "R-M-14492209-3"
 ) {
+    Log.d("TarotAppAds", "Creating Banner Ad with ID: $adUnitId")
     AndroidView(
         modifier = modifier,
         factory = { context ->
@@ -34,6 +35,7 @@ fun YandexBannerAd(
                 setAdUnitId(adUnitId)
                 setAdSize(BannerAdSize.inlineSize(context, 320, 50))
                 val adRequest = AdRequest.Builder().build()
+                Log.d("TarotAppAds", "Loading Banner Ad...")
                 loadAd(adRequest)
             }
         }
