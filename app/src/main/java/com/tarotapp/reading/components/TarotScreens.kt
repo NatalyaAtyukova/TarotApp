@@ -1,4 +1,4 @@
-package com.example.tarotapp.components
+package com.tarotapp.reading.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.background
@@ -77,7 +77,7 @@ fun TarotScreens(
             MysticalTarotOption(
                 title = "Одна карта",
                 description = "Простое гадание на один вопрос",
-                icon = Icons.Default.Star,
+                icon = Icons.Filled.Star,
                 isAvailable = true,
                 onClick = navigateToSingleCard
             )
@@ -88,7 +88,7 @@ fun TarotScreens(
             MysticalTarotOption(
                 title = "Три карты",
                 description = "Прошлое, настоящее и будущее",
-                icon = Icons.Default.GroupWork,
+                icon = Icons.Filled.GroupWork,
                 isAvailable = hasThreeCardSubscription || hasPremiumSubscription,
                 onClick = {
                     if (hasThreeCardSubscription || hasPremiumSubscription) {
@@ -106,8 +106,8 @@ fun TarotScreens(
             // Пять карт: доступно только для премиум подписки
             MysticalTarotOption(
                 title = "Пять карт",
-                description = "Подробный расклад на ситуацию",
-                icon = Icons.Default.Dashboard,
+                description = "Подробный расклад на пять карт",
+                icon = Icons.Filled.Dashboard,
                 isAvailable = hasPremiumSubscription,
                 onClick = {
                     if (hasPremiumSubscription) {
@@ -124,9 +124,9 @@ fun TarotScreens(
 
             // Десять карт: доступно только для премиум подписки
             MysticalTarotOption(
-                title = "Десять карт",
-                description = "Кельтский крест",
-                icon = Icons.Default.ViewModule,
+                title = "Кельтский крест",
+                description = "Сложный расклад на десять карт",
+                icon = Icons.Filled.ViewModule,
                 isAvailable = hasPremiumSubscription,
                 onClick = {
                     if (hasPremiumSubscription) {
@@ -139,13 +139,13 @@ fun TarotScreens(
                 }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // История: всегда доступна
+            // История: доступно для всех подписок
             MysticalTarotOption(
-                title = "История",
-                description = "Ваши сохраненные расклады",
-                icon = Icons.Default.History,
+                title = "История раскладов",
+                description = "Просмотр сохраненных раскладов",
+                icon = Icons.Filled.History,
                 isAvailable = true,
                 onClick = navigateToHistory
             )

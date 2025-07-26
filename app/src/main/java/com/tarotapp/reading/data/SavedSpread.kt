@@ -1,6 +1,6 @@
-package com.example.tarotapp.data
+package com.tarotapp.reading.data
 
-import com.example.tarotapp.TarotCard
+import com.tarotapp.reading.TarotCard
 
 data class SavedSpread(
     val date: String,

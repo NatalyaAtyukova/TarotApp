@@ -1,4 +1,4 @@
-package com.example.tarotapp.components
+package com.tarotapp.reading.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -9,21 +9,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.rustore.sdk.billingclient.model.product.ProductSubscription
 
 // Data classes representing the subscription structure
 data class SubscriptionPeriod(
     val years: Int,
     val months: Int,
     val days: Int
-)
-
-data class ProductSubscription(
-    val subscriptionPeriod: SubscriptionPeriod?,
-    val freeTrialPeriod: SubscriptionPeriod?,
-    val gracePeriod: SubscriptionPeriod?,
-    val introductoryPrice: String?,
-    val introductoryPriceAmount: String?,
-    val introductoryPricePeriod: SubscriptionPeriod?
 )
 
 @Composable

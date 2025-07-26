@@ -8,5 +8,6 @@ data class TarotCard(
     val keywords: List<String>,
     val element: String,
     val imagePath: String,
+    val reversedMeaning: String,
     val planet: String? = null
 )

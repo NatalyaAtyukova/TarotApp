@@ -1,4 +1,4 @@
-package com.example.tarotapp.ui.theme
+package com.tarotapp.reading.ui.theme
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.tarotapp.reading.ui.theme.*
 
 private val DarkColorScheme = darkColorScheme(
     primary = MysticGold,

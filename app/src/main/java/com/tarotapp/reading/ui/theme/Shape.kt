@@ -1,4 +1,4 @@
-package com.example.tarotapp.ui.theme
+package com.tarotapp.reading.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes

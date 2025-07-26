@@ -1,4 +1,4 @@
-package com.example.tarotapp.ui.theme
+package com.tarotapp.reading.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

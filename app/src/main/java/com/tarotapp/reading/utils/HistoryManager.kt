@@ -8,8 +8,8 @@ import com.tarotapp.reading.data.SavedSpread
 import com.tarotapp.reading.TarotCard
 
 data class TarotSpread(
-    val date: String,
-    val cards: List<String>
+    val cards: List<String>,
+    val date: String
 )
 
 object HistoryManager {

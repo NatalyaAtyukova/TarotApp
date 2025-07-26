@@ -36,6 +36,41 @@ import androidx.compose.runtime.collectAsState
 import ru.rustore.sdk.billingclient.RuStoreBillingClient
 import ru.rustore.sdk.billingclient.RuStoreBillingClientFactory
 import ru.rustore.sdk.billingclient.model.purchase.PaymentResult
+import ru.rustore.sdk.billingclient.model.product.ProductSubscription
+import com.tarotapp.reading.components.TarotScreens
+import com.tarotapp.reading.components.SubscriptionScreen
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.animation.ExperimentalAnimationApi
+import kotlin.io.println
+import java.lang.System.currentTimeMillis
 
 class MainActivity : ComponentActivity() {
     private lateinit var billingClient: RuStoreBillingClient
