@@ -5,15 +5,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.tarotapp"
+    namespace = "com.tarotapp.reading"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.tarotapp"
+        applicationId = "com.tarotapp.reading"
         minSdk = 24
         targetSdk = 34
-        versionCode = 9
-        versionName = "9.0"
+        versionCode = 1
+        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
