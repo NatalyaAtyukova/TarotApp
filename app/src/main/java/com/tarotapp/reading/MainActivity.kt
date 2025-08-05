@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
@@ -39,39 +40,12 @@ import ru.rustore.sdk.billingclient.model.purchase.PaymentResult
 import ru.rustore.sdk.billingclient.model.product.ProductSubscription
 import com.tarotapp.reading.components.TarotScreens
 import com.tarotapp.reading.components.SubscriptionScreen
+import com.tarotapp.reading.utils.LanguageManager
+import com.tarotapp.reading.utils.LanguageTestHelper
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Typography
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.animation.ExperimentalAnimationApi
 import kotlin.io.println
 import java.lang.System.currentTimeMillis
-import android.util.Log
 
 class MainActivity : ComponentActivity() {
     private lateinit var billingClient: RuStoreBillingClient
@@ -104,21 +78,21 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-sealed class Screen(val route: String, val icon: @Composable () -> Unit, val label: String) {
+sealed class Screen(val route: String, val icon: @Composable () -> Unit, val labelResId: Int) {
     object Home : Screen(
         "tarot",
-        { Icon(Icons.Filled.Home, contentDescription = "Главная") },
-        "Главная"
+        { Icon(Icons.Filled.Home, contentDescription = null) },
+        R.string.nav_home
     )
     object History : Screen(
         "history",
-        { Icon(Icons.Filled.History, contentDescription = "История") },
-        "История"
+        { Icon(Icons.Filled.History, contentDescription = null) },
+        R.string.nav_history
     )
     object Subscription : Screen(
         "subscription",
-        { Icon(Icons.Filled.Subscriptions, contentDescription = "Подписки") },
-        "Подписки"
+        { Icon(Icons.Filled.Subscriptions, contentDescription = null) },
+        R.string.nav_subscriptions
     )
 }
 
@@ -129,10 +103,18 @@ fun MainApp(billingClient: RuStoreBillingClient) {
     val isSdkInitialized by TarotApplication.isSdkInitialized.collectAsState()
     var adShownOnLaunch by remember { mutableStateOf(false) }
 
+    // Тестирование мультиязычности при запуске
+    LaunchedEffect(Unit) {
+        Log.d("TarotApp", "Запуск тестирования мультиязычности...")
+        LanguageTestHelper.checkLocalizationCompleteness(context)
+        LanguageTestHelper.testLanguageManager(context)
+        LanguageTestHelper.testTarotCardData(context)
+    }
+
     LaunchedEffect(isSdkInitialized) {
         if (isSdkInitialized && !adShownOnLaunch) {
             Log.d("TarotAppAds", "SDK initialized, showing App Open Ad...")
-            showYandexAppOpenAd(context, adUnitId = "R-M-14492209-2")
+            showYandexAppOpenAd(context)
             adShownOnLaunch = true
         } else {
             Log.d("TarotAppAds", "SDK not ready yet. isSdkInitialized: $isSdkInitialized, adShownOnLaunch: $adShownOnLaunch")
@@ -196,7 +178,7 @@ fun MainApp(billingClient: RuStoreBillingClient) {
                         },
                         label = { 
                             Text(
-                                text = screen.label,
+                                text = context.getString(screen.labelResId),
                                 style = MaterialTheme.typography.labelMedium
                             ) 
                         },
@@ -243,6 +225,7 @@ fun MainApp(billingClient: RuStoreBillingClient) {
                         }
                     },
                     navigateToHistory = { navController.navigate("history") },
+                    navigateToLanguageSettings = { navController.navigate("language_settings") },
                     hasThreeCardSubscription = currentSubscription != null,
                     hasPremiumSubscription = currentSubscription != null
                 )
@@ -332,6 +315,22 @@ fun MainApp(billingClient: RuStoreBillingClient) {
                     },
                     isLoading = isLoading,
                     errorMessage = errorMessage
+                )
+            }
+            
+            composable(
+                "language_settings",
+                enterTransition = { fadeIn(animationSpec = tween(300)) },
+                exitTransition = { fadeOut(animationSpec = tween(300)) }
+            ) {
+                LanguageSettingsScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onLanguageChanged = {
+                        // Перезапускаем приложение для применения изменений языка
+                        val intent = Intent(context, MainActivity::class.java)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        context.startActivity(intent)
+                    }
                 )
             }
         }

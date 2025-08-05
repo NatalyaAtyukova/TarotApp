@@ -2,14 +2,15 @@ package com.tarotapp.reading.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.tarotapp.reading.R
 import ru.rustore.sdk.billingclient.model.product.ProductSubscription
+import androidx.compose.ui.res.stringResource
 
 // Data classes representing the subscription structure
 data class SubscriptionPeriod(
@@ -18,6 +19,7 @@ data class SubscriptionPeriod(
     val days: Int
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubscriptionScreen(
     currentSubscription: ProductSubscription?,
@@ -26,6 +28,7 @@ fun SubscriptionScreen(
     isLoading: Boolean = false,
     errorMessage: String? = null
 ) {
+    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(errorMessage) {
@@ -41,7 +44,7 @@ fun SubscriptionScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Подписки",
+            text = stringResource(R.string.nav_subscriptions),
             fontSize = 24.sp,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -49,7 +52,7 @@ fun SubscriptionScreen(
 
         if (currentSubscription != null) {
             Text(
-                text = "У вас активна подписка",
+                text = stringResource(R.string.subscription_active),
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -57,7 +60,7 @@ fun SubscriptionScreen(
 
             currentSubscription.subscriptionPeriod?.let { period ->
                 Text(
-                    text = "Период подписки: ${period.years} лет, ${period.months} месяцев, ${period.days} дней",
+                    text = stringResource(R.string.subscription_period, period.years, period.months, period.days),
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -68,11 +71,11 @@ fun SubscriptionScreen(
                 onClick = onNavigateToTarotScreens,
                 modifier = Modifier.padding(top = 16.dp)
             ) {
-                Text("Перейти к Таро")
+                Text(stringResource(R.string.go_to_tarot))
             }
         } else {
             Text(
-                text = "Выберите подписку",
+                text = stringResource(R.string.choose_subscription),
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(bottom = 16.dp)
@@ -91,13 +94,13 @@ fun SubscriptionScreen(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = "Подписка на 3 карты",
+                        text = stringResource(R.string.subscription_three_cards),
                         fontSize = 18.sp,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     Text(
-                        text = "Доступ к раскладам из 3 карт",
+                        text = stringResource(R.string.subscription_three_cards_desc),
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.padding(bottom = 16.dp)
@@ -107,7 +110,7 @@ fun SubscriptionScreen(
                         enabled = !isLoading,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Подписаться")
+                        Text(stringResource(R.string.btn_subscribe))
                     }
                 }
             }
@@ -125,23 +128,23 @@ fun SubscriptionScreen(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = "Премиум подписка",
+                        text = stringResource(R.string.subscription_premium),
                         fontSize = 18.sp,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     Text(
-                        text = "Доступ ко всем раскладам (3, 5 и 10 карт)",
+                        text = stringResource(R.string.subscription_premium_desc),
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                     Button(
-                        onClick = { onSubscribe("premium_subscription") },
+                        onClick = { onSubscribe("premium_monthly_subscription") },
                         enabled = !isLoading,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Подписаться")
+                        Text(stringResource(R.string.btn_subscribe))
                     }
                 }
             }

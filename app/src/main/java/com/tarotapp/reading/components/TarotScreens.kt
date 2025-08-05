@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.GroupWork
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.ViewModule
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -25,6 +26,8 @@ import kotlinx.coroutines.launch
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
+import com.tarotapp.reading.R
 
 @Composable
 fun TarotScreens(
@@ -33,9 +36,11 @@ fun TarotScreens(
     navigateToFiveCards: () -> Unit,
     navigateToTenCards: () -> Unit,
     navigateToHistory: () -> Unit,
+    navigateToLanguageSettings: () -> Unit,
     hasThreeCardSubscription: Boolean,
     hasPremiumSubscription: Boolean
 ) {
+    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
@@ -59,7 +64,7 @@ fun TarotScreens(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Мистические Карты Таро",
+                text = context.getString(R.string.main_title),
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.Center,
@@ -67,7 +72,7 @@ fun TarotScreens(
             )
 
             Text(
-                text = "Выберите тип расклада",
+                text = context.getString(R.string.main_subtitle),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                 modifier = Modifier.padding(bottom = 24.dp)
@@ -75,8 +80,8 @@ fun TarotScreens(
 
             // Одна карта: всегда доступно
             MysticalTarotOption(
-                title = "Одна карта",
-                description = "Простое гадание на один вопрос",
+                title = context.getString(R.string.spread_single_card),
+                description = context.getString(R.string.spread_single_card_desc),
                 icon = Icons.Filled.Star,
                 isAvailable = true,
                 onClick = navigateToSingleCard
@@ -86,8 +91,8 @@ fun TarotScreens(
 
             // Три карты: доступно для подписки на 3 карты или премиум подписки
             MysticalTarotOption(
-                title = "Три карты",
-                description = "Прошлое, настоящее и будущее",
+                title = context.getString(R.string.spread_three_cards),
+                description = context.getString(R.string.spread_three_cards_desc),
                 icon = Icons.Filled.GroupWork,
                 isAvailable = hasThreeCardSubscription || hasPremiumSubscription,
                 onClick = {
@@ -95,7 +100,7 @@ fun TarotScreens(
                         navigateToThreeCards()
                     } else {
                         coroutineScope.launch {
-                            showSubscriptionWarning(snackbarHostState, "Подписка на 3 карты")
+                            showSubscriptionWarning(snackbarHostState, context.getString(R.string.subscription_three_cards))
                         }
                     }
                 }
@@ -105,8 +110,8 @@ fun TarotScreens(
 
             // Пять карт: доступно только для премиум подписки
             MysticalTarotOption(
-                title = "Пять карт",
-                description = "Подробный расклад на пять карт",
+                title = context.getString(R.string.spread_five_cards),
+                description = context.getString(R.string.spread_five_cards_desc),
                 icon = Icons.Filled.Dashboard,
                 isAvailable = hasPremiumSubscription,
                 onClick = {
@@ -114,7 +119,7 @@ fun TarotScreens(
                         navigateToFiveCards()
                     } else {
                         coroutineScope.launch {
-                            showSubscriptionWarning(snackbarHostState, "Премиум подписка")
+                            showSubscriptionWarning(snackbarHostState, context.getString(R.string.subscription_premium))
                         }
                     }
                 }
@@ -124,8 +129,8 @@ fun TarotScreens(
 
             // Десять карт: доступно только для премиум подписки
             MysticalTarotOption(
-                title = "Кельтский крест",
-                description = "Сложный расклад на десять карт",
+                title = context.getString(R.string.spread_celtic_cross),
+                description = context.getString(R.string.spread_celtic_cross_desc),
                 icon = Icons.Filled.ViewModule,
                 isAvailable = hasPremiumSubscription,
                 onClick = {
@@ -133,7 +138,7 @@ fun TarotScreens(
                         navigateToTenCards()
                     } else {
                         coroutineScope.launch {
-                            showSubscriptionWarning(snackbarHostState, "Премиум подписка")
+                            showSubscriptionWarning(snackbarHostState, context.getString(R.string.subscription_premium))
                         }
                     }
                 }
@@ -143,14 +148,25 @@ fun TarotScreens(
 
             // История: доступно для всех подписок
             MysticalTarotOption(
-                title = "История раскладов",
-                description = "Просмотр сохраненных раскладов",
+                title = context.getString(R.string.spread_history),
+                description = context.getString(R.string.spread_history_desc),
                 icon = Icons.Filled.History,
                 isAvailable = true,
                 onClick = navigateToHistory
             )
 
             Spacer(modifier = Modifier.weight(1f))
+
+            // Кнопка настроек языка
+            MysticalTarotOption(
+                title = context.getString(R.string.language_settings),
+                description = context.getString(R.string.select_language),
+                icon = Icons.Filled.Settings,
+                isAvailable = true,
+                onClick = navigateToLanguageSettings
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Snackbar для отображения предупреждений
             SnackbarHost(
@@ -240,5 +256,5 @@ suspend fun showSubscriptionWarning(
     snackbarHostState: SnackbarHostState,
     subscriptionType: String
 ) {
-    snackbarHostState.showSnackbar("Для этого действия требуется $subscriptionType.")
+    snackbarHostState.showSnackbar(subscriptionType)
 } 

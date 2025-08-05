@@ -16,12 +16,14 @@ import com.tarotapp.reading.utils.HistoryManager
 import com.tarotapp.reading.utils.YandexBannerAd
 import com.tarotapp.reading.utils.showYandexInterstitialAd
 import androidx.compose.material3.Scaffold
+import com.tarotapp.reading.R
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun HistoryScreen(isSubscribed: Boolean) {
     val context = LocalContext.current
     LaunchedEffect(Unit) {
-        showYandexInterstitialAd(context, adUnitId = "R-M-14492209-1")
+        showYandexInterstitialAd(context)
     }
     var history by remember { mutableStateOf(HistoryManager.loadHistory(context)) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
@@ -41,7 +43,7 @@ fun HistoryScreen(isSubscribed: Boolean) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Сохранённые расклады",
+                text = stringResource(R.string.saved_spreads),
                 fontSize = 24.sp,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = 16.dp)
@@ -49,7 +51,7 @@ fun HistoryScreen(isSubscribed: Boolean) {
 
             if (!isSubscribed) {
                 Text(
-                    text = "Доступ к истории доступен только для подписчиков.",
+                    text = stringResource(R.string.history_subscription_required),
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(top = 32.dp),
@@ -58,7 +60,7 @@ fun HistoryScreen(isSubscribed: Boolean) {
             } else {
                 if (history.isEmpty()) {
                     Text(
-                        text = "История пустая. Сохраните свои первые расклады!",
+                        text = stringResource(R.string.history_empty_message),
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.padding(top = 32.dp),
@@ -84,13 +86,13 @@ fun HistoryScreen(isSubscribed: Boolean) {
                                     .padding(16.dp)
                             ) {
                                 Text(
-                                    "Дата: ${spread.date}",
+                                    stringResource(R.string.history_date, spread.date),
                                     fontSize = 16.sp,
                                     color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.padding(bottom = 8.dp)
                                 )
                                 Text(
-                                    "Карты:",
+                                    stringResource(R.string.history_cards_label),
                                     fontSize = 14.sp,
                                     color = MaterialTheme.colorScheme.onBackground,
                                     modifier = Modifier.padding(bottom = 8.dp)
@@ -100,22 +102,11 @@ fun HistoryScreen(isSubscribed: Boolean) {
                                         "• $cardName",
                                         fontSize = 14.sp,
                                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-                                        modifier = Modifier.padding(start = 8.dp)
+                                        modifier = Modifier.padding(start = 16.dp, bottom = 4.dp)
                                     )
                                 }
                             }
                         }
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Button(
-                        onClick = {
-                            showConfirmationDialog = true
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                    ) {
-                        Text("Очистить историю")
                     }
                 }
             }
@@ -126,10 +117,10 @@ fun HistoryScreen(isSubscribed: Boolean) {
         AlertDialog(
             onDismissRequest = { showConfirmationDialog = false },
             title = {
-                Text(text = "Подтверждение")
+                Text(text = stringResource(R.string.confirmation))
             },
             text = {
-                Text(text = "Вы уверены, что хотите очистить всю историю? Это действие необратимо.")
+                Text(text = stringResource(R.string.clear_history_confirmation))
             },
             confirmButton = {
                 TextButton(
@@ -139,12 +130,12 @@ fun HistoryScreen(isSubscribed: Boolean) {
                         showConfirmationDialog = false
                     }
                 ) {
-                    Text("Да", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.yes), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showConfirmationDialog = false }) {
-                    Text("Отмена")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )

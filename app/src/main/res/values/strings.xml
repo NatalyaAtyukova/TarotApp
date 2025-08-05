@@ -1,3 +1,139 @@
 <resources>
     <string name="app_name">Tarot: Гадания на таро, расклад</string>
+    
+    <!-- Навигация -->
+    <string name="nav_home">Главная</string>
+    <string name="nav_history">История</string>
+    <string name="nav_subscriptions">Подписки</string>
+    
+    <!-- Главный экран -->
+    <string name="main_title">Мистические Карты Таро</string>
+    <string name="main_subtitle">Выберите тип расклада</string>
+    
+    <!-- Типы раскладов -->
+    <string name="spread_single_card">Одна карта</string>
+    <string name="spread_single_card_desc">Простое гадание на один вопрос</string>
+    <string name="spread_three_cards">Три карты</string>
+    <string name="spread_three_cards_desc">Прошлое, настоящее и будущее</string>
+    <string name="spread_five_cards">Пять карт</string>
+    <string name="spread_five_cards_desc">Детальный расклад на пять карт</string>
+    <string name="spread_celtic_cross">Кельтский крест</string>
+    <string name="spread_celtic_cross_desc">Сложный расклад на десять карт</string>
+    <string name="spread_history">История раскладов</string>
+    <string name="spread_history_desc">Просмотр сохраненных раскладов</string>
+    
+    <!-- Подписки -->
+    <string name="subscription_three_cards">Подписка на 3 карты</string>
+    <string name="subscription_premium">Премиум подписка</string>
+    <string name="subscription_required">Требуется подписка</string>
+    
+    <!-- Кнопки -->
+    <string name="btn_back">Назад</string>
+    <string name="btn_save">Сохранить</string>
+    <string name="btn_share">Поделиться</string>
+    <string name="btn_subscribe">Подписаться</string>
+    <string name="btn_restore">Восстановить покупки</string>
+    
+    <!-- Сообщения -->
+    <string name="msg_subscription_required">Для доступа к этой функции требуется подписка</string>
+    <string name="msg_subscription_required_for">Для этого действия требуется %s</string>
+    <string name="msg_purchase_success">Покупка успешно завершена</string>
+    <string name="msg_purchase_failed">Ошибка при покупке</string>
+    <string name="msg_restore_success">Покупки успешно восстановлены</string>
+    <string name="msg_restore_failed">Ошибка при восстановлении покупок</string>
+    <string name="msg_save_success">Расклад сохранен</string>
+    <string name="msg_share_text">Мой расклад Таро: %s</string>
+    
+    <!-- История -->
+    <string name="history_title">История раскладов</string>
+    <string name="history_empty">История пуста</string>
+    <string name="history_date">Дата: %s</string>
+    <string name="history_cards">Карт: %d</string>
+    
+    <!-- Карты -->
+    <string name="card_interpretation">Интерпретация</string>
+    <string name="card_keywords">Ключевые слова</string>
+    <string name="card_meaning">Значение</string>
+    <string name="card_reversed">Перевернутая карта</string>
+    <string name="card_upright">Прямая карта</string>
+    
+    <!-- Загрузка -->
+    <string name="loading">Загрузка...</string>
+    <string name="error_occurred">Произошла ошибка</string>
+    
+    <!-- Подтверждения -->
+    <string name="confirm_delete">Удалить расклад?</string>
+    <string name="confirm_delete_desc">Это действие нельзя отменить</string>
+    <string name="btn_delete">Удалить</string>
+    <string name="btn_cancel">Отмена</string>
+    
+    <!-- Карта дня -->
+    <string name="tarot_of_the_day">Карта дня</string>
+    <string name="press_button_to_draw_card">Нажмите кнопку, чтобы вытянуть карту</string>
+    <string name="draw_card">Вытянуть карту</string>
+    <string name="another_card">Другая карта</string>
+    <string name="save_spread">Сохранить расклад</string>
+    <string name="spread_saved">Расклад сохранен!</string>
+    
+    <!-- Интерпретация карт -->
+    <string name="element">Элемент</string>
+    <string name="description">Описание</string>
+    <string name="situation">Ситуация</string>
+    <string name="keywords">Ключевые слова</string>
+    <string name="advice">Совет</string>
+    
+    <!-- Заголовки раскладов -->
+    <string name="spread_three_cards_title">Прошлое, настоящее и будущее</string>
+    <string name="spread_five_cards_title">Подробный расклад</string>
+    <string name="spread_celtic_cross_title">Кельтский крест</string>
+    <string name="spread_cards_count">Расклад на %d карт</string>
+    
+    <!-- Премиум расклады -->
+    <string name="premium_spread_five_cards">Премиум расклад: Пять карт</string>
+    <string name="premium_spread_celtic_cross">Премиум расклад: Кельтский крест</string>
+    <string name="premium_spread_cards_count">Премиум расклад: %d карт</string>
+    <string name="loading_cards">Загрузка карт...</string>
+    
+    <!-- История -->
+    <string name="saved_spreads">Сохранённые расклады</string>
+    <string name="history_subscription_required">Доступ к истории доступен только для подписчиков.</string>
+    <string name="history_empty_message">История пустая. Сохраните свои первые расклады!</string>
+    <string name="history_cards_label">Карты:</string>
+    
+    <!-- Подписки -->
+    <string name="subscription_active">У вас активна подписка</string>
+    <string name="subscription_period" formatted="false">Период подписки: %d лет, %d месяцев, %d дней</string>
+    <string name="go_to_tarot">Перейти к Таро</string>
+    <string name="choose_subscription">Выберите подписку</string>
+    <string name="subscription_three_cards_desc">Доступ к раскладам из 3 карт</string>
+    <string name="subscription_premium_desc">Доступ ко всем раскладам (3, 5 и 10 карт)</string>
+    
+    <!-- Навигация -->
+    <string name="back">Назад</string>
+    
+    <!-- Элементы и планеты -->
+    <string name="element_label">Стихия: %s</string>
+    <string name="planet_label">Планета: %s</string>
+    
+    <!-- Сообщения об ошибках -->
+    <string name="error_saving_spread">Ошибка при сохранении расклада</string>
+    <string name="error_updating_spread">Ошибка при обновлении расклада</string>
+    
+    <!-- Кнопки -->
+    <string name="change_spread">Сменить расклад</string>
+    
+    <!-- Диалоги -->
+    <string name="confirmation">Подтверждение</string>
+    <string name="clear_history_confirmation">Вы уверены, что хотите очистить всю историю? Это действие необратимо.</string>
+    <string name="yes">Да</string>
+    <string name="cancel">Отмена</string>
+    
+    <!-- Настройки языка -->
+    <string name="language_settings">Настройки языка</string>
+    <string name="select_language">Выберите язык</string>
+    <string name="language_note">Приложение будет перезапущено для применения изменений языка</string>
+    <string name="language_changed">Язык изменен</string>
+    <string name="restart_required">Для применения изменений языка необходимо перезапустить приложение</string>
+    <string name="restart_now">Перезапустить сейчас</string>
+    <string name="later">Позже</string>
 </resources>

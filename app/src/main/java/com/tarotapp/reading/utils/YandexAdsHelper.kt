@@ -22,10 +22,17 @@ import com.yandex.mobile.ads.appopenad.AppOpenAdLoadListener
 import com.yandex.mobile.ads.appopenad.AppOpenAdLoader
 import android.util.Log
 
+// Рекламные ID - замените на реальные ID из Yandex Ads
+object AdUnitIds {
+    const val BANNER_AD = "R-M-14492209-3"
+    const val INTERSTITIAL_AD = "R-M-14492209-1"
+    const val APP_OPEN_AD = "R-M-14492209-2"
+}
+
 @Composable
 fun YandexBannerAd(
     modifier: Modifier = Modifier,
-    adUnitId: String = "R-M-14492209-3"
+    adUnitId: String = AdUnitIds.BANNER_AD
 ) {
     Log.d("TarotAppAds", "Creating Banner Ad with ID: $adUnitId")
     AndroidView(
@@ -44,7 +51,7 @@ fun YandexBannerAd(
 
 fun showYandexInterstitialAd(
     context: Context,
-    adUnitId: String,
+    adUnitId: String = AdUnitIds.INTERSTITIAL_AD,
     onAdClosed: (() -> Unit)? = null
 ) {
     Log.d("TarotAppAds", "Requesting Interstitial Ad with ID: $adUnitId")
@@ -87,7 +94,7 @@ fun showYandexInterstitialAd(
 
 fun showYandexAppOpenAd(
     context: Context,
-    adUnitId: String,
+    adUnitId: String = AdUnitIds.APP_OPEN_AD,
     onAdClosed: (() -> Unit)? = null
 ) {
     Log.d("TarotAppAds", "Requesting App Open Ad with ID: $adUnitId")

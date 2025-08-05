@@ -1,0 +1,119 @@
+<resources>
+    <string name="app_name">Tarot: Adivinación y Lectura de Cartas</string>
+    
+    <!-- Navegación -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_history">Historial</string>
+    <string name="nav_subscriptions">Suscripciones</string>
+    
+    <!-- Pantalla principal -->
+    <string name="main_title">Cartas Místicas del Tarot</string>
+    <string name="main_subtitle">Elige tu tipo de tirada</string>
+    
+    <!-- Tipos de tiradas -->
+    <string name="spread_single_card">Una Carta</string>
+    <string name="spread_single_card_desc">Adivinación simple para una pregunta</string>
+    <string name="spread_three_cards">Tres Cartas</string>
+    <string name="spread_three_cards_desc">Pasado, presente y futuro</string>
+    <string name="spread_five_cards">Cinco Cartas</string>
+    <string name="spread_five_cards_desc">Tirada detallada de cinco cartas</string>
+    <string name="spread_celtic_cross">Cruz Celta</string>
+    <string name="spread_celtic_cross_desc">Tirada compleja de diez cartas</string>
+    <string name="spread_history">Historial de Lecturas</string>
+    <string name="spread_history_desc">Ver lecturas guardadas</string>
+    
+    <!-- Suscripciones -->
+    <string name="subscription_three_cards">Suscripción de Tres Cartas</string>
+    <string name="subscription_premium">Suscripción Premium</string>
+    <string name="subscription_required">Suscripción Requerida</string>
+    
+    <!-- Botones -->
+    <string name="btn_back">Atrás</string>
+    <string name="btn_save">Guardar</string>
+    <string name="btn_share">Compartir</string>
+    <string name="btn_subscribe">Suscribirse</string>
+    <string name="btn_restore">Restaurar Compras</string>
+    
+    <!-- Mensajes -->
+    <string name="msg_subscription_required">Se requiere suscripción para acceder a esta función</string>
+    <string name="msg_subscription_required_for">Se requiere suscripción para esta acción: %s</string>
+    <string name="msg_purchase_success">Compra completada exitosamente</string>
+    <string name="msg_purchase_failed">Error en la compra</string>
+    <string name="msg_restore_success">Compras restauradas exitosamente</string>
+    <string name="msg_restore_failed">Error al restaurar compras</string>
+    <string name="msg_save_success">Lectura guardada</string>
+    <string name="msg_share_text">Mi Lectura de Tarot: %s</string>
+    
+    <!-- Historial -->
+    <string name="history_title">Historial de Lecturas</string>
+    <string name="history_empty">El historial está vacío</string>
+    <string name="history_date">Fecha: %s</string>
+    <string name="history_cards">Cartas: %d</string>
+    
+    <!-- Cartas -->
+    <string name="card_interpretation">Interpretación</string>
+    <string name="card_keywords">Palabras Clave</string>
+    <string name="card_meaning">Significado</string>
+    <string name="card_reversed">Carta Invertida</string>
+    <string name="card_upright">Carta Derecha</string>
+    
+    <!-- Carga -->
+    <string name="loading">Cargando...</string>
+    <string name="error_occurred">Ocurrió un error</string>
+    
+    <!-- Confirmaciones -->
+    <string name="confirm_delete">¿Eliminar lectura?</string>
+    <string name="confirm_delete_desc">Esta acción no se puede deshacer</string>
+    <string name="btn_delete">Eliminar</string>
+    <string name="btn_cancel">Cancelar</string>
+    
+    <!-- Carta del Día -->
+    <string name="tarot_of_the_day">Carta del Día</string>
+    <string name="press_button_to_draw_card">Presiona el botón para sacar una carta</string>
+    <string name="draw_card">Sacar Carta</string>
+    <string name="another_card">Otra Carta</string>
+    <string name="save_spread">Guardar Tirada</string>
+    <string name="spread_saved">¡Tirada guardada!</string>
+    
+    <!-- Interpretación de Cartas -->
+    <string name="element">Elemento</string>
+    <string name="description">Descripción</string>
+    <string name="situation">Situación</string>
+    <string name="keywords">Palabras Clave</string>
+    <string name="advice">Consejo</string>
+    
+    <!-- Títulos de Tiradas -->
+    <string name="spread_three_cards_title">Pasado, Presente y Futuro</string>
+    <string name="spread_five_cards_title">Tirada Detallada</string>
+    <string name="spread_celtic_cross_title">Cruz Celta</string>
+    <string name="spread_cards_count">Tirada de %d cartas</string>
+    
+    <!-- Tiradas Premium -->
+    <string name="premium_spread_five_cards">Tirada Premium: Cinco Cartas</string>
+    <string name="premium_spread_celtic_cross">Tirada Premium: Cruz Celta</string>
+    <string name="premium_spread_cards_count">Tirada Premium: %d Cartas</string>
+    <string name="loading_cards">Cargando cartas...</string>
+    
+    <!-- Historial -->
+    <string name="saved_spreads">Tiradas Guardadas</string>
+    <string name="history_subscription_required">El acceso al historial está disponible solo para suscriptores.</string>
+    <string name="history_empty_message">El historial está vacío. ¡Guarda tus primeras tiradas!</string>
+    <string name="history_cards_label">Cartas:</string>
+    
+    <!-- Suscripciones -->
+    <string name="subscription_active">Tienes una suscripción activa</string>
+    <string name="subscription_period" formatted="false">Período de suscripción: %d años, %d meses, %d días</string>
+    <string name="go_to_tarot">Ir a Tarot</string>
+    <string name="choose_subscription">Elegir suscripción</string>
+    <string name="subscription_three_cards_desc">Acceso a tiradas de 3 cartas</string>
+    <string name="subscription_premium_desc">Acceso a todas las tiradas (3, 5 y 10 cartas)</string>
+    
+    <!-- Configuración de idioma -->
+    <string name="language_settings">Configuración de idioma</string>
+    <string name="select_language">Seleccionar idioma</string>
+    <string name="language_note">La aplicación se reiniciará para aplicar los cambios de idioma</string>
+    <string name="language_changed">Idioma cambiado</string>
+    <string name="restart_required">La aplicación debe reiniciarse para aplicar los cambios de idioma</string>
+    <string name="restart_now">Reiniciar ahora</string>
+    <string name="later">Más tarde</string>
+</resources> 

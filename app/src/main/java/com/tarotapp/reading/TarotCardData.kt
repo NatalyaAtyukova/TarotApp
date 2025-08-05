@@ -1,5 +1,34 @@
 package com.tarotapp.reading
 
+import android.content.Context
+import android.content.res.Configuration
+import java.util.Locale
+
+// Интерфейс для загрузки данных карт
+interface TarotCardDataLoader {
+    fun getTarotCards(context: Context): List<TarotCard>
+}
+
+// Реализация для русского языка (по умолчанию)
+object RussianTarotCardDataLoader : TarotCardDataLoader {
+    override fun getTarotCards(context: Context): List<TarotCard> = tarotCards
+}
+
+// Функция для получения данных карт в зависимости от языка
+fun getTarotCardsForLanguage(context: Context): List<TarotCard> {
+    val locale = context.resources.configuration.locales[0]
+    val language = locale.language
+    
+    return when (language) {
+        "en" -> EnglishTarotCardDataLoader.getTarotCards(context)
+        "zh" -> ChineseTarotCardDataLoader.getTarotCards(context)
+        "hi" -> HindiTarotCardDataLoader.getTarotCards(context)
+        "es" -> SpanishTarotCardDataLoader.getTarotCards(context)
+        else -> RussianTarotCardDataLoader.getTarotCards(context) // По умолчанию русский
+    }
+}
+
+// Данные карт на русском языке (по умолчанию)
 val tarotCards = listOf(
     // Старшие Арканы (22 карты)
     TarotCard(
@@ -869,4 +898,10 @@ val tarotCards = listOf(
         planet = "Сатурн"
     )
 )
+
+// Заглушки для других языков (пока используем русские данные)
+// EnglishTarotCardDataLoader теперь определен в отдельном файле
+// ChineseTarotCardDataLoader теперь определен в отдельном файле
+// HindiTarotCardDataLoader теперь определен в отдельном файле
+// SpanishTarotCardDataLoader теперь определен в отдельном файле
 

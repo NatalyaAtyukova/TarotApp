@@ -1,0 +1,139 @@
+<resources>
+    <string name="app_name">塔罗牌：占卜与卡牌解读</string>
+    
+    <!-- 导航 -->
+    <string name="nav_home">首页</string>
+    <string name="nav_history">历史</string>
+    <string name="nav_subscriptions">订阅</string>
+    
+    <!-- 主屏幕 -->
+    <string name="main_title">神秘塔罗牌</string>
+    <string name="main_subtitle">选择您的牌阵类型</string>
+    
+    <!-- 牌阵类型 -->
+    <string name="spread_single_card">单张牌</string>
+    <string name="spread_single_card_desc">简单占卜一个问题</string>
+    <string name="spread_three_cards">三张牌</string>
+    <string name="spread_three_cards_desc">过去、现在和未来</string>
+    <string name="spread_five_cards">五张牌</string>
+    <string name="spread_five_cards_desc">详细的五张牌阵</string>
+    <string name="spread_celtic_cross">凯尔特十字</string>
+    <string name="spread_celtic_cross_desc">复杂的十张牌阵</string>
+    <string name="spread_history">解读历史</string>
+    <string name="spread_history_desc">查看保存的解读</string>
+    
+    <!-- 订阅 -->
+    <string name="subscription_three_cards">三张牌订阅</string>
+    <string name="subscription_premium">高级订阅</string>
+    <string name="subscription_required">需要订阅</string>
+    
+    <!-- 按钮 -->
+    <string name="btn_back">返回</string>
+    <string name="btn_save">保存</string>
+    <string name="btn_share">分享</string>
+    <string name="btn_subscribe">订阅</string>
+    <string name="btn_restore">恢复购买</string>
+    
+    <!-- 消息 -->
+    <string name="msg_subscription_required">需要订阅才能访问此功能</string>
+    <string name="msg_subscription_required_for">此操作需要订阅：%s</string>
+    <string name="msg_purchase_success">购买成功完成</string>
+    <string name="msg_purchase_failed">购买失败</string>
+    <string name="msg_restore_success">购买恢复成功</string>
+    <string name="msg_restore_failed">恢复购买失败</string>
+    <string name="msg_save_success">解读已保存</string>
+    <string name="msg_share_text">我的塔罗牌解读：%s</string>
+    
+    <!-- 历史 -->
+    <string name="history_title">解读历史</string>
+    <string name="history_empty">历史为空</string>
+    <string name="history_date">日期：%s</string>
+    <string name="history_cards">牌数：%d</string>
+    
+    <!-- 卡牌 -->
+    <string name="card_interpretation">解读</string>
+    <string name="card_keywords">关键词</string>
+    <string name="card_meaning">含义</string>
+    <string name="card_reversed">逆位牌</string>
+    <string name="card_upright">正位牌</string>
+    
+    <!-- 加载 -->
+    <string name="loading">加载中...</string>
+    <string name="error_occurred">发生错误</string>
+    
+    <!-- 确认 -->
+    <string name="confirm_delete">删除解读？</string>
+    <string name="confirm_delete_desc">此操作无法撤销</string>
+    <string name="btn_delete">删除</string>
+    <string name="btn_cancel">取消</string>
+    
+    <!-- 每日塔罗牌 -->
+    <string name="tarot_of_the_day">每日塔罗牌</string>
+    <string name="press_button_to_draw_card">点击按钮抽取卡牌</string>
+    <string name="draw_card">抽取卡牌</string>
+    <string name="another_card">另一张卡牌</string>
+    <string name="save_spread">保存牌阵</string>
+    <string name="spread_saved">牌阵已保存！</string>
+    
+    <!-- 卡牌解读 -->
+    <string name="element">元素</string>
+    <string name="description">描述</string>
+    <string name="situation">情况</string>
+    <string name="keywords">关键词</string>
+    <string name="advice">建议</string>
+    
+    <!-- 牌阵标题 -->
+    <string name="spread_three_cards_title">过去、现在和未来</string>
+    <string name="spread_five_cards_title">详细牌阵</string>
+    <string name="spread_celtic_cross_title">凯尔特十字</string>
+    <string name="spread_cards_count">%d张牌的牌阵</string>
+    
+    <!-- 高级牌阵 -->
+    <string name="premium_spread_five_cards">高级牌阵：五张牌</string>
+    <string name="premium_spread_celtic_cross">高级牌阵：凯尔特十字</string>
+    <string name="premium_spread_cards_count">高级牌阵：%d张牌</string>
+    <string name="loading_cards">加载卡牌中...</string>
+    
+    <!-- 历史 -->
+    <string name="saved_spreads">保存的牌阵</string>
+    <string name="history_subscription_required">历史记录仅对订阅者开放。</string>
+    <string name="history_empty_message">历史记录为空。保存您的第一个牌阵！</string>
+    <string name="history_cards_label">卡牌：</string>
+    
+    <!-- 订阅 -->
+    <string name="subscription_active">您有活跃的订阅</string>
+    <string name="subscription_period" formatted="false">订阅期限：%d年，%d月，%d天</string>
+    <string name="go_to_tarot">前往塔罗牌</string>
+    <string name="choose_subscription">选择订阅</string>
+    <string name="subscription_three_cards_desc">访问3张牌阵</string>
+    <string name="subscription_premium_desc">访问所有牌阵（3、5和10张牌）</string>
+    
+    <!-- 导航 -->
+    <string name="back">返回</string>
+    
+    <!-- 元素和行星 -->
+    <string name="element_label">元素：%s</string>
+    <string name="planet_label">行星：%s</string>
+    
+    <!-- 错误消息 -->
+    <string name="error_saving_spread">保存牌阵时出错</string>
+    <string name="error_updating_spread">更新牌阵时出错</string>
+    
+    <!-- 按钮 -->
+    <string name="change_spread">更换牌阵</string>
+    
+    <!-- 对话框 -->
+    <string name="confirmation">确认</string>
+    <string name="clear_history_confirmation">您确定要清除所有历史记录吗？此操作不可逆转。</string>
+    <string name="yes">是</string>
+    <string name="cancel">取消</string>
+    
+    <!-- 语言设置 -->
+    <string name="language_settings">语言设置</string>
+    <string name="select_language">选择语言</string>
+    <string name="language_note">应用将重新启动以应用语言更改</string>
+    <string name="language_changed">语言已更改</string>
+    <string name="restart_required">需要重新启动应用以应用语言更改</string>
+    <string name="restart_now">立即重启</string>
+    <string name="later">稍后</string>
+</resources> 

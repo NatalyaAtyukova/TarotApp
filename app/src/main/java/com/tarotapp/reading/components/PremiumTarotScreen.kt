@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tarotapp.reading.TarotCard
-import com.tarotapp.reading.tarotCards
+import com.tarotapp.reading.getTarotCardsForLanguage
 import com.tarotapp.reading.utils.HistoryManager
 import com.tarotapp.reading.utils.YandexBannerAd
 import com.tarotapp.reading.utils.showYandexInterstitialAd
@@ -36,6 +36,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.background
+import androidx.compose.ui.res.stringResource
 
 @Composable
 private fun KeywordChip(keyword: String) {
@@ -76,7 +77,7 @@ fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () 
     val context = LocalContext.current
     
     LaunchedEffect(Unit) {
-        showYandexInterstitialAd(context, adUnitId = "R-M-14492209-1")
+        showYandexInterstitialAd(context)
     }
     
     // Инициализируем карты напрямую, без использования remember или rememberSaveable
@@ -87,8 +88,9 @@ fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () 
     LaunchedEffect(key1 = Unit) {
         try {
             // Безопасно получаем карты
-            val shuffledCards = if (tarotCards.isNotEmpty()) {
-                tarotCards.shuffled().take(minOf(numCards, tarotCards.size))
+            val cards = getTarotCardsForLanguage(context)
+            val shuffledCards = if (cards.isNotEmpty()) {
+                cards.shuffled().take(minOf(numCards, cards.size))
             } else {
                 emptyList()
             }
@@ -126,7 +128,7 @@ fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () 
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Назад",
+                        contentDescription = stringResource(R.string.back),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(28.dp)
                     )
@@ -136,9 +138,9 @@ fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () 
                 
                 Text(
                     text = when (numCards) {
-                        5 -> "Премиум расклад: Пять карт"
-                        10 -> "Премиум расклад: Кельтский крест"
-                        else -> "Премиум расклад: $numCards карт"
+                        5 -> stringResource(R.string.premium_spread_five_cards)
+                        10 -> stringResource(R.string.premium_spread_celtic_cross)
+                        else -> stringResource(R.string.premium_spread_cards_count, numCards)
                     },
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.primary,
@@ -156,7 +158,7 @@ fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () 
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Загрузка карт...",
+                        text = stringResource(R.string.loading_cards),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -222,7 +224,7 @@ fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () 
                                 Spacer(modifier = Modifier.height(16.dp))
 
                                 Text(
-                                    "Ситуация:",
+                                    stringResource(R.string.situation),
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary,
@@ -236,7 +238,7 @@ fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () 
                                 )
 
                                 Text(
-                                    "Ключевые слова:",
+                                    stringResource(R.string.keywords),
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary,
@@ -245,7 +247,7 @@ fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () 
                                 KeywordsList(card.keywords)
 
                                 Text(
-                                    "Совет:",
+                                    stringResource(R.string.advice),
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary,
@@ -263,13 +265,13 @@ fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () 
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        "Стихия: ${card.element}",
+                                        stringResource(R.string.element_label, card.element),
                                         fontSize = 12.sp,
                                         color = MaterialTheme.colorScheme.secondary
                                     )
                                     card.planet?.let {
                                         Text(
-                                            "Планета: $it",
+                                            stringResource(R.string.planet_label, it),
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colorScheme.secondary
                                         )
@@ -292,9 +294,9 @@ fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () 
                                 val currentDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
                                 HistoryManager.saveTarotSpread(context, cardsList.value, currentDate)
                                 isSaved = true
-                                Toast.makeText(context, "Расклад сохранен!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, context.getString(R.string.spread_saved), Toast.LENGTH_SHORT).show()
                             } catch (e: Exception) {
-                                Toast.makeText(context, "Ошибка при сохранении расклада", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, context.getString(R.string.error_saving_spread), Toast.LENGTH_SHORT).show()
                             }
                         },
                         modifier = Modifier.weight(1f),
@@ -302,23 +304,24 @@ fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () 
                             containerColor = MaterialTheme.colorScheme.primary
                         )
                     ) {
-                        Text("Сохранить расклад")
+                        Text(stringResource(R.string.save_spread))
                     }
 
                     Button(
                         onClick = {
                             try {
                                 // Безопасно получаем новые карты
-                                val shuffledCards = if (tarotCards.isNotEmpty()) {
-                                    tarotCards.shuffled().take(minOf(numCards, tarotCards.size))
+                                val cards = getTarotCardsForLanguage(context)
+                                val shuffledCards = if (cards.isNotEmpty()) {
+                                    cards.shuffled().take(minOf(numCards, cards.size))
                                 } else {
                                     emptyList()
                                 }
                                 cardsList.value = shuffledCards
                                 isSaved = false
-                                showYandexInterstitialAd(context, adUnitId = "R-M-14492209-1")
+                                showYandexInterstitialAd(context)
                             } catch (e: Exception) {
-                                Toast.makeText(context, "Ошибка при обновлении расклада", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, context.getString(R.string.error_updating_spread), Toast.LENGTH_SHORT).show()
                             }
                         },
                         modifier = Modifier.weight(1f),
@@ -326,13 +329,13 @@ fun PremiumTarotScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () 
                             containerColor = MaterialTheme.colorScheme.secondary
                         )
                     ) {
-                        Text("Сменить расклад")
+                        Text(stringResource(R.string.change_spread))
                     }
                 }
 
                 if (isSaved) {
                     Text(
-                        "Расклад сохранён!",
+                        stringResource(R.string.spread_saved),
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(bottom = 16.dp)

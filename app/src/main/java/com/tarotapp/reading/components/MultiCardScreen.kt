@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tarotapp.reading.TarotCard
-import com.tarotapp.reading.tarotCards
+import com.tarotapp.reading.getTarotCardsForLanguage
 import com.tarotapp.reading.utils.HistoryManager
 import com.tarotapp.reading.utils.YandexBannerAd
 import com.tarotapp.reading.utils.showYandexInterstitialAd
@@ -38,6 +38,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import com.google.accompanist.flowlayout.FlowRow
 import androidx.compose.foundation.background
+import androidx.compose.ui.res.stringResource
 
 @Composable
 private fun KeywordChip(keyword: String) {
@@ -76,7 +77,7 @@ fun MultiCardScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () -> 
     val context = LocalContext.current
     
     LaunchedEffect(Unit) {
-        showYandexInterstitialAd(context, adUnitId = "R-M-14492209-1")
+        showYandexInterstitialAd(context)
     }
     
     // Инициализируем карты напрямую, без использования remember или rememberSaveable
@@ -87,8 +88,9 @@ fun MultiCardScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () -> 
     LaunchedEffect(key1 = Unit) {
         try {
             // Безопасно получаем карты
-            val shuffledCards = if (tarotCards.isNotEmpty()) {
-                tarotCards.shuffled().take(minOf(numCards, tarotCards.size))
+            val cards = getTarotCardsForLanguage(context)
+            val shuffledCards = if (cards.isNotEmpty()) {
+                cards.shuffled().take(minOf(numCards, cards.size))
             } else {
                 emptyList()
             }
@@ -136,10 +138,10 @@ fun MultiCardScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () -> 
                 
                 Text(
                     text = when (numCards) {
-                        3 -> "Прошлое, настоящее и будущее"
-                        5 -> "Подробный расклад"
-                        10 -> "Кельтский крест"
-                        else -> "Расклад на $numCards карт"
+                        3 -> stringResource(R.string.spread_three_cards_title)
+                        5 -> stringResource(R.string.spread_five_cards_title)
+                        10 -> stringResource(R.string.spread_celtic_cross_title)
+                        else -> stringResource(R.string.spread_cards_count, numCards)
                     },
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.primary,
@@ -304,14 +306,15 @@ fun MultiCardScreen(numCards: Int, isSubscribed: Boolean, onNavigateBack: () -> 
                         onClick = {
                             try {
                                 // Безопасно получаем новые карты
-                                val shuffledCards = if (tarotCards.isNotEmpty()) {
-                                    tarotCards.shuffled().take(minOf(numCards, tarotCards.size))
+                                val cards = getTarotCardsForLanguage(context)
+                                val shuffledCards = if (cards.isNotEmpty()) {
+                                    cards.shuffled().take(minOf(numCards, cards.size))
                                 } else {
                                     emptyList()
                                 }
                                 cardsList.value = shuffledCards
                                 isSaved = false
-                                showYandexInterstitialAd(context, adUnitId = "R-M-14492209-1")
+                                showYandexInterstitialAd(context)
                             } catch (e: Exception) {
                                 Toast.makeText(context, "Ошибка при обновлении расклада", Toast.LENGTH_SHORT).show()
                             }

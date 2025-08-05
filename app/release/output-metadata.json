@@ -4,15 +4,15 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.example.tarotapp",
+  "applicationId": "com.tarotapp.reading",
   "variantName": "release",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 9,
-      "versionName": "9.0",
+      "versionCode": 3,
+      "versionName": "1.2",
       "outputFile": "app-release.apk"
     }
   ],

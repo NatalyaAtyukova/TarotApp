@@ -1,0 +1,139 @@
+<resources>
+    <string name="app_name">तारो: भविष्यवाणी और कार्ड रीडिंग</string>
+    
+    <!-- नेविगेशन -->
+    <string name="nav_home">होम</string>
+    <string name="nav_history">इतिहास</string>
+    <string name="nav_subscriptions">सदस्यताएं</string>
+    
+    <!-- मुख्य स्क्रीन -->
+    <string name="main_title">रहस्यमय तारो कार्ड</string>
+    <string name="main_subtitle">अपना स्प्रेड प्रकार चुनें</string>
+    
+    <!-- स्प्रेड प्रकार -->
+    <string name="spread_single_card">एक कार्ड</string>
+    <string name="spread_single_card_desc">एक प्रश्न के लिए सरल भविष्यवाणी</string>
+    <string name="spread_three_cards">तीन कार्ड</string>
+    <string name="spread_three_cards_desc">अतीत, वर्तमान और भविष्य</string>
+    <string name="spread_five_cards">पांच कार्ड</string>
+    <string name="spread_five_cards_desc">विस्तृत पांच कार्ड स्प्रेड</string>
+    <string name="spread_celtic_cross">सेल्टिक क्रॉस</string>
+    <string name="spread_celtic_cross_desc">जटिल दस कार्ड स्प्रेड</string>
+    <string name="spread_history">रीडिंग इतिहास</string>
+    <string name="spread_history_desc">सहेजी गई रीडिंग देखें</string>
+    
+    <!-- सदस्यताएं -->
+    <string name="subscription_three_cards">तीन कार्ड सदस्यता</string>
+    <string name="subscription_premium">प्रीमियम सदस्यता</string>
+    <string name="subscription_required">सदस्यता आवश्यक</string>
+    
+    <!-- बटन -->
+    <string name="btn_back">वापस</string>
+    <string name="btn_save">सहेजें</string>
+    <string name="btn_share">साझा करें</string>
+    <string name="btn_subscribe">सदस्यता लें</string>
+    <string name="btn_restore">खरीदारी पुनर्स्थापित करें</string>
+    
+    <!-- संदेश -->
+    <string name="msg_subscription_required">इस सुविधा तक पहुंचने के लिए सदस्यता आवश्यक है</string>
+    <string name="msg_subscription_required_for">इस क्रिया के लिए सदस्यता आवश्यक है: %s</string>
+    <string name="msg_purchase_success">खरीदारी सफलतापूर्वक पूरी हुई</string>
+    <string name="msg_purchase_failed">खरीदारी विफल</string>
+    <string name="msg_restore_success">खरीदारी सफलतापूर्वक पुनर्स्थापित की गई</string>
+    <string name="msg_restore_failed">खरीदारी पुनर्स्थापित करने में विफल</string>
+    <string name="msg_save_success">रीडिंग सहेजी गई</string>
+    <string name="msg_share_text">मेरी तारो रीडिंग: %s</string>
+    
+    <!-- इतिहास -->
+    <string name="history_title">रीडिंग इतिहास</string>
+    <string name="history_empty">इतिहास खाली है</string>
+    <string name="history_date">तिथि: %s</string>
+    <string name="history_cards">कार्ड: %d</string>
+    
+    <!-- कार्ड -->
+    <string name="card_interpretation">व्याख्या</string>
+    <string name="card_keywords">कीवर्ड</string>
+    <string name="card_meaning">अर्थ</string>
+    <string name="card_reversed">उलटा कार्ड</string>
+    <string name="card_upright">सीधा कार्ड</string>
+    
+    <!-- लोडिंग -->
+    <string name="loading">लोड हो रहा है...</string>
+    <string name="error_occurred">एक त्रुटि हुई</string>
+    
+    <!-- पुष्टिकरण -->
+    <string name="confirm_delete">रीडिंग हटाएं?</string>
+    <string name="confirm_delete_desc">यह क्रिया पूर्ववत नहीं की जा सकती</string>
+    <string name="btn_delete">हटाएं</string>
+    <string name="btn_cancel">रद्द करें</string>
+    
+    <!-- दिन का तारो कार्ड -->
+    <string name="tarot_of_the_day">दिन का तारो कार्ड</string>
+    <string name="press_button_to_draw_card">कार्ड निकालने के लिए बटन दबाएं</string>
+    <string name="draw_card">कार्ड निकालें</string>
+    <string name="another_card">दूसरा कार्ड</string>
+    <string name="save_spread">स्प्रेड सहेजें</string>
+    <string name="spread_saved">स्प्रेड सहेजा गया!</string>
+    
+    <!-- कार्ड व्याख्या -->
+    <string name="element">तत्व</string>
+    <string name="description">विवरण</string>
+    <string name="situation">स्थिति</string>
+    <string name="keywords">कीवर्ड</string>
+    <string name="advice">सलाह</string>
+    
+    <!-- स्प्रेड शीर्षक -->
+    <string name="spread_three_cards_title">अतीत, वर्तमान और भविष्य</string>
+    <string name="spread_five_cards_title">विस्तृत स्प्रेड</string>
+    <string name="spread_celtic_cross_title">सेल्टिक क्रॉस</string>
+    <string name="spread_cards_count">%d कार्ड का स्प्रेड</string>
+    
+    <!-- प्रीमियम स्प्रेड -->
+    <string name="premium_spread_five_cards">प्रीमियम स्प्रेड: पांच कार्ड</string>
+    <string name="premium_spread_celtic_cross">प्रीमियम स्प्रेड: सेल्टिक क्रॉस</string>
+    <string name="premium_spread_cards_count">प्रीमियम स्प्रेड: %d कार्ड</string>
+    <string name="loading_cards">कार्ड लोड हो रहे हैं...</string>
+    
+    <!-- इतिहास -->
+    <string name="saved_spreads">सहेजे गए स्प्रेड</string>
+    <string name="history_subscription_required">इतिहास केवल सदस्यों के लिए उपलब्ध है।</string>
+    <string name="history_empty_message">इतिहास खाली है। अपने पहले स्प्रेड सहेजें!</string>
+    <string name="history_cards_label">कार्ड:</string>
+    
+    <!-- सदस्यताएं -->
+    <string name="subscription_active">आपकी सक्रिय सदस्यता है</string>
+    <string name="subscription_period" formatted="false">सदस्यता अवधि: %d वर्ष, %d महीने, %d दिन</string>
+    <string name="go_to_tarot">तारो पर जाएं</string>
+    <string name="choose_subscription">सदस्यता चुनें</string>
+    <string name="subscription_three_cards_desc">3 कार्ड स्प्रेड तक पहुंच</string>
+    <string name="subscription_premium_desc">सभी स्प्रेड तक पहुंच (3, 5 और 10 कार्ड)</string>
+    
+    <!-- नेविगेशन -->
+    <string name="back">वापस</string>
+    
+    <!-- तत्व और ग्रह -->
+    <string name="element_label">तत्व: %s</string>
+    <string name="planet_label">ग्रह: %s</string>
+    
+    <!-- त्रुटि संदेश -->
+    <string name="error_saving_spread">प्रसार सहेजने में त्रुटि</string>
+    <string name="error_updating_spread">प्रसार अपडेट करने में त्रुटि</string>
+    
+    <!-- बटन -->
+    <string name="change_spread">प्रसार बदलें</string>
+    
+    <!-- डायलॉग -->
+    <string name="confirmation">पुष्टि</string>
+    <string name="clear_history_confirmation">क्या आप वाकई सभी इतिहास साफ़ करना चाहते हैं? यह क्रिया अपरिवर्तनीय है।</string>
+    <string name="yes">हाँ</string>
+    <string name="cancel">रद्द करें</string>
+    
+    <!-- भाषा सेटिंग्स -->
+    <string name="language_settings">भाषा सेटिंग्स</string>
+    <string name="select_language">भाषा चुनें</string>
+    <string name="language_note">भाषा परिवर्तन लागू करने के लिए ऐप को पुनरारंभ किया जाएगा</string>
+    <string name="language_changed">भाषा बदली गई</string>
+    <string name="restart_required">भाषा परिवर्तन लागू करने के लिए ऐप को पुनरारंभ करना होगा</string>
+    <string name="restart_now">अभी पुनरारंभ करें</string>
+    <string name="later">बाद में</string>
+</resources> 

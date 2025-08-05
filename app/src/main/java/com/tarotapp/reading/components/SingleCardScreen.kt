@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tarotapp.reading.TarotCard
-import com.tarotapp.reading.tarotCards
+import com.tarotapp.reading.getTarotCardsForLanguage
 import com.tarotapp.reading.utils.HistoryManager
 import com.tarotapp.reading.utils.YandexBannerAd
 import com.tarotapp.reading.utils.showYandexInterstitialAd
@@ -37,6 +37,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.BorderStroke
+import com.tarotapp.reading.R
+import androidx.compose.ui.res.stringResource
 
 @Composable
 private fun KeywordChip(keyword: String) {
@@ -75,7 +77,7 @@ fun SingleCardScreen(isSubscribed: Boolean, onNavigateBack: () -> Unit = {}) {
     var selectedCard by remember { mutableStateOf<TarotCard?>(null) }
 
     LaunchedEffect(Unit) {
-        showYandexInterstitialAd(context, adUnitId = "R-M-14492209-1")
+        showYandexInterstitialAd(context)
     }
 
     Scaffold(
@@ -104,7 +106,7 @@ fun SingleCardScreen(isSubscribed: Boolean, onNavigateBack: () -> Unit = {}) {
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Назад",
+                        contentDescription = stringResource(R.string.back),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(28.dp)
                     )
@@ -113,7 +115,7 @@ fun SingleCardScreen(isSubscribed: Boolean, onNavigateBack: () -> Unit = {}) {
                 Spacer(modifier = Modifier.width(8.dp))
                 
                 Text(
-                    text = "Карта дня",
+                    text = stringResource(R.string.tarot_of_the_day),
                     style = MaterialTheme.typography.headlineLarge,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.weight(1f)
@@ -136,7 +138,7 @@ fun SingleCardScreen(isSubscribed: Boolean, onNavigateBack: () -> Unit = {}) {
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Нажмите кнопку, чтобы вытянуть карту",
+                            text = stringResource(R.string.press_button_to_draw_card),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,
@@ -179,8 +181,7 @@ fun SingleCardScreen(isSubscribed: Boolean, onNavigateBack: () -> Unit = {}) {
 
                 Card(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState()),
+                        .fillMaxWidth(),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
                     ),
@@ -208,7 +209,7 @@ fun SingleCardScreen(isSubscribed: Boolean, onNavigateBack: () -> Unit = {}) {
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = "Элемент:",
+                                    text = stringResource(R.string.element),
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -222,7 +223,7 @@ fun SingleCardScreen(isSubscribed: Boolean, onNavigateBack: () -> Unit = {}) {
 
                         // Описание
                         Text(
-                            text = "Описание",
+                            text = stringResource(R.string.description),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(bottom = 8.dp)
@@ -237,7 +238,7 @@ fun SingleCardScreen(isSubscribed: Boolean, onNavigateBack: () -> Unit = {}) {
 
                         // Ситуация
                         Text(
-                            text = "Ситуация",
+                            text = stringResource(R.string.situation),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(bottom = 8.dp)
@@ -252,7 +253,7 @@ fun SingleCardScreen(isSubscribed: Boolean, onNavigateBack: () -> Unit = {}) {
 
                         // Ключевые слова
                         Text(
-                            text = "Ключевые слова",
+                            text = stringResource(R.string.keywords),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(bottom = 8.dp)
@@ -261,7 +262,7 @@ fun SingleCardScreen(isSubscribed: Boolean, onNavigateBack: () -> Unit = {}) {
 
                         // Совет
                         Text(
-                            text = "Совет",
+                            text = stringResource(R.string.advice),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(bottom = 8.dp)
@@ -281,7 +282,8 @@ fun SingleCardScreen(isSubscribed: Boolean, onNavigateBack: () -> Unit = {}) {
 
             Button(
                 onClick = {
-                    selectedCard = tarotCards[Random.nextInt(tarotCards.size)]
+                    val cards = getTarotCardsForLanguage(context)
+        selectedCard = cards[Random.nextInt(cards.size)]
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -296,7 +298,7 @@ fun SingleCardScreen(isSubscribed: Boolean, onNavigateBack: () -> Unit = {}) {
                 )
             ) {
                 Text(
-                    text = if (selectedCard == null) "Вытянуть карту" else "Другая карта",
+                    text = if (selectedCard == null) stringResource(R.string.draw_card) else stringResource(R.string.another_card),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
@@ -309,7 +311,7 @@ fun SingleCardScreen(isSubscribed: Boolean, onNavigateBack: () -> Unit = {}) {
                     onClick = {
                         val currentDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
                         HistoryManager.saveTarotSpread(context, listOf(selectedCard!!), currentDate)
-                        Toast.makeText(context, "Расклад сохранен!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.spread_saved), Toast.LENGTH_SHORT).show()
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -324,7 +326,7 @@ fun SingleCardScreen(isSubscribed: Boolean, onNavigateBack: () -> Unit = {}) {
                     )
                 ) {
                     Text(
-                        text = "Сохранить расклад",
+                        text = stringResource(R.string.save_spread),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSecondary
                     )
